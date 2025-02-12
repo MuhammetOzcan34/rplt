@@ -86,6 +86,7 @@ function submitForm(formId, handler) {
   google.script.run
     .withSuccessHandler(function(result) {
       showAlert('success', 'İşlem başarılı');
+      form[0].reset();
       loadPage('carihesap');
     })
     .withFailureHandler(function(error) {
