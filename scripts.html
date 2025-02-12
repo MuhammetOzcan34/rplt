@@ -1,0 +1,125 @@
+<script>
+// Sayfa yükleme ve yönlendirme
+$(document).ready(function() {
+  loadPage('carihesap'); // Varsayılan sayfa
+
+  // Menü tıklama
+  $('.nav-link').click(function(e) {
+    e.preventDefault();
+    const page = $(this).data('page');
+    loadPage(page);
+  });
+
+  // Arama
+  $('#searchInput').on('keyup', function() {
+    const searchTerm = $(this).val();
+    const currentPage = $('.nav-link.active').data('page');
+    loadPage(currentPage, searchTerm);
+  });
+});
+
+function loadPage(page, search = '') {
+  console.log('Sayfa yükleniyor:', page);
+  $('#content').html('<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i></div>');
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      console.log('Sayfa içeriği ve veriler alındı');
+      if (result && result.html) {
+        // Önce HTML içeriğini yükle
+        $('#content').html(result.html);
+        $('.nav-link').removeClass('active');
+        $(`[data-page="${page}"]`).addClass('active');
+
+        // Sonra verileri tabloya yükle
+        if (result.data) {
+          switch(page) {
+            case 'carihesap':
+              $('#cariHesapList').empty();
+              result.data.forEach(function(item) {
+                $('#cariHesapList').append(`
+                  <tr>
+                    <td>${item.firmaAdi}</td>
+                    <td>${item.subeBolge || '-'}</td>
+                    <td>${item.firmaTuru}</td>
+                    <td>${item.yetkiliKisi || '-'}</td>
+                    <td>${item.telefon || '-'}</td>
+                    <td>${item.email || '-'}</td>
+                    <td>${item.gorevSayisi || 0}</td>
+                    <td>${item.projeSayisi || 0}</td>
+                    <td>
+                      <button class="btn btn-sm btn-icon btn-warning" onclick="editCariHesap('${item.id}')">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="btn btn-sm btn-icon btn-danger" onclick="deleteCariHesap('${item.id}')">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                `);
+              });
+              break;
+            // Diğer sayfalar için benzer işlemler yapılacak
+          }
+        }
+      } else {
+        console.error('Sayfa içeriği boş');
+        $('#content').html('<div class="alert alert-danger">Sayfa içeriği yüklenemedi</div>');
+      }
+    })
+    .withFailureHandler(function(error) {
+      console.error('Sayfa yükleme hatası:', error);
+      $('#content').html(`<div class="alert alert-danger">Hata: ${error.message}</div>`);
+    })
+    .handlePageLoad(page, search);
+}
+
+// Form işlemleri
+function submitForm(formId, handler) {
+  const form = $(`#${formId}`);
+  const data = {};
+
+  form.find('input, select, textarea').each(function() {
+    data[$(this).attr('name')] = $(this).val();
+  });
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      showAlert('success', 'İşlem başarılı');
+      loadPage(handler);
+    })
+    .withFailureHandler(function(error) {
+      showAlert('danger', error.message);
+    })
+    [handler](data);
+}
+
+// Yazdırma
+function printContent(elementId) {
+  const content = document.getElementById(elementId);
+  const printWindow = window.open('', '', 'height=600,width=800');
+
+  printWindow.document.write('<html><head><title>Yazdır</title>');
+  printWindow.document.write('</head><body>');
+  printWindow.document.write(content.innerHTML);
+  printWindow.document.write('</body></html>');
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+}
+
+// Bildirimler
+function showAlert(type, message) {
+  const alert = `
+    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  `;
+
+  $('#alertArea').html(alert);
+  setTimeout(() => $('#alertArea').html(''), 3000);
+}
+</script>

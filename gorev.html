@@ -1,0 +1,196 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Görevler</h5>
+    <div>
+      <div class="btn-group me-2">
+        <button class="btn btn-outline-secondary" onclick="filterGorevler('acik')">Açık</button>
+        <button class="btn btn-outline-secondary" onclick="filterGorevler('yapiliyor')">Yapılıyor</button>
+        <button class="btn btn-outline-secondary" onclick="filterGorevler('tamamlandi')">Tamamlandı</button>
+      </div>
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#gorevModal">
+        <i class="fas fa-plus"></i> Yeni Görev
+      </button>
+    </div>
+  </div>
+  
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Durum</th>
+            <th>Görev</th>
+            <th>Proje</th>
+            <th>Firma</th>
+            <th>Tarih</th>
+            <th>İşlemler</th>
+          </tr>
+        </thead>
+        <tbody id="gorevList">
+          <!-- JavaScript ile doldurulacak -->
+        </tbody>
+      </table>
+    </div>
+    
+    <nav>
+      <ul class="pagination justify-content-center">
+        <li class="page-item"><a class="page-link" href="#" onclick="changePage(1)">1</a></li>
+        <li class="page-item"><a class="page-link" href="#" onclick="changePage(2)">2</a></li>
+        <li class="page-item"><a class="page-link" href="#" onclick="showAllGorevler()">Tümü</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Görev Modal -->
+<div class="modal fade" id="gorevModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Yeni Görev</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="gorevForm">
+          <div class="form-group mb-3">
+            <label class="form-label">Durum</label>
+            <select class="form-select" name="durum" required>
+              <option value="Açık">Açık</option>
+              <option value="Yapılıyor">Yapılıyor</option>
+              <option value="Kapalı">Kapalı</option>
+            </select>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label class="form-label">Görev</label>
+            <input type="text" class="form-control" name="gorev" required>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label class="form-label">Bağlı Proje</label>
+            <select class="form-select" name="projeNo" onchange="updateFirma(this.value)">
+              <option value="">Seçiniz...</option>
+              <!-- JavaScript ile doldurulacak -->
+            </select>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label class="form-label">Firma</label>
+            <input type="text" class="form-control" name="firma" readonly>
+          </div>
+          
+          <div class="form-group mb-3">
+            <label class="form-label">Not</label>
+            <textarea class="form-control" name="not" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" onclick="submitForm('gorevForm', 'addGorev')">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentFilter = 'acik';
+let currentPage = 1;
+const ITEMS_PER_PAGE = 25;
+
+// Görev listesini yükle
+function loadGorevList() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      const tbody = $('#gorevList');
+      tbody.empty();
+      
+      // Sayfalama
+      const start = (currentPage - 1) * ITEMS_PER_PAGE;
+      const end = start + ITEMS_PER_PAGE;
+      const pageData = data.slice(start, end);
+      
+      pageData.forEach(function(item) {
+        const statusClass = {
+          'Açık': 'text-danger',
+          'Yapılıyor': 'text-warning',
+          'Kapalı': 'text-success'
+        }[item.durum];
+        
+        tbody.append(`
+          <tr>
+            <td><span class="${statusClass}">${item.durum}</span></td>
+            <td>${item.gorev}</td>
+            <td>${item.projeNo || '-'}</td>
+            <td>${item.firma || '-'}</td>
+            <td>${item.olusturmaTarihi}</td>
+            <td>
+              <button class="btn btn-sm btn-icon btn-warning" onclick="editGorev('${item.id}')">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-icon btn-danger" onclick="deleteGorev('${item.id}')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `);
+      });
+    })
+    .Gorev.getList(currentFilter);
+}
+
+function filterGorevler(filter) {
+  currentFilter = filter;
+  currentPage = 1;
+  loadGorevList();
+  
+  // Button states
+  $('.btn-group .btn').removeClass('active');
+  $(`.btn-group .btn[onclick="filterGorevler('${filter}')"]`).addClass('active');
+}
+
+function changePage(page) {
+  currentPage = page;
+  loadGorevList();
+  
+  // Update pagination
+  $('.pagination .page-item').removeClass('active');
+  $(`.pagination .page-item:nth-child(${page})`).addClass('active');
+}
+
+function showAllGorevler() {
+  currentPage = 1;
+  ITEMS_PER_PAGE = 1000; // Show all items
+  loadGorevList();
+}
+
+function updateFirma(projeNo) {
+  if(!projeNo) {
+    $('input[name="firma"]').val('');
+    return;
+  }
+  
+  google.script.run
+    .withSuccessHandler(function(proje) {
+      if(proje) {
+        $('input[name="firma"]').val(proje.firmaAdi);
+      }
+    })
+    .Proje.findById(projeNo);
+}
+
+// Sayfa yüklendiğinde
+$(document).ready(function() {
+  loadGorevList();
+  
+  // Projeleri yükle
+  google.script.run
+    .withSuccessHandler(function(projeler) {
+      const select = $('select[name="projeNo"]');
+      projeler.forEach(function(proje) {
+        select.append(`<option value="${proje.projeNo}">${proje.projeNo} - ${proje.projeKonusu}</option>`);
+      });
+    })
+    .Proje.getList();
+});
+</script>

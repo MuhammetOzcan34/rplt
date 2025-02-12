@@ -1,0 +1,188 @@
+<div class="row">
+  <!-- Müşteri Dağılımı -->
+  <div class="col-md-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="mb-0">Müşteri Dağılımı</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="musteriChart"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Teklif Dağılımı -->
+  <div class="col-md-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="mb-0">Teklif Durumları</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="teklifChart"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Proje Durumu -->
+  <div class="col-md-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="mb-0">Proje Durumları</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="projeChart"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Görev Dağılımı -->
+  <div class="col-md-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="mb-0">Görev Durumları</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="gorevChart"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Aylık Ciro -->
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Aylık Ciro</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="ciroChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Grafik renkleri
+const colors = {
+  primary: '#0d6efd',
+  success: '#198754',
+  danger: '#dc3545',
+  warning: '#ffc107',
+  info: '#0dcaf0'
+};
+
+// Grafik oluşturma fonksiyonu
+function createChart(id, type, data, options = {}) {
+  const ctx = document.getElementById(id).getContext('2d');
+  return new Chart(ctx, {
+    type: type,
+    data: data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      ...options
+    }
+  });
+}
+
+// Müşteri dağılımı grafiği
+function loadMusteriChart() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      createChart('musteriChart', 'pie', {
+        labels: data.labels,
+        datasets: [{
+          data: data.data,
+          backgroundColor: [colors.primary, colors.success]
+        }]
+      });
+    })
+    .Rapor.getMusteriDagilimi();
+}
+
+// Teklif dağılımı grafiği
+function loadTeklifChart() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      createChart('teklifChart', 'doughnut', {
+        labels: data.labels,
+        datasets: [{
+          data: data.data,
+          backgroundColor: [colors.warning, colors.success, colors.danger]
+        }]
+      });
+    })
+    .Rapor.getTeklifDagilimi();
+}
+
+// Proje durumu grafiği
+function loadProjeChart() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      createChart('projeChart', 'pie', {
+        labels: data.labels,
+        datasets: [{
+          data: data.data,
+          backgroundColor: [colors.primary, colors.success]
+        }]
+      });
+    })
+    .Rapor.getProjeDurumu();
+}
+
+// Görev dağılımı grafiği
+function loadGorevChart() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      createChart('gorevChart', 'doughnut', {
+        labels: data.labels,
+        datasets: [{
+          data: data.data,
+          backgroundColor: [colors.danger, colors.warning, colors.success]
+        }]
+      });
+    })
+    .Rapor.getGorevDagilimi();
+}
+
+// Aylık ciro grafiği
+function loadCiroChart() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      createChart('ciroChart', 'bar', {
+        labels: data.labels,
+        datasets: [{
+          label: 'Aylık Ciro',
+          data: data.data,
+          backgroundColor: colors.primary
+        }]
+      }, {
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return new Intl.NumberFormat('tr-TR', {
+                  style: 'currency',
+                  currency: 'TRY'
+                }).format(value);
+              }
+            }
+          }
+        }
+      });
+    })
+    .Rapor.getAylikCiro();
+}
+
+// Sayfa yüklendiğinde
+$(document).ready(function() {
+  loadMusteriChart();
+  loadTeklifChart();
+  loadProjeChart();
+  loadGorevChart();
+  loadCiroChart();
+});
+</script>

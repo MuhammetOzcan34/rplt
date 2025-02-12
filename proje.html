@@ -1,0 +1,185 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Projeler</h5>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#projeModal">
+      <i class="fas fa-plus"></i> Yeni Proje
+    </button>
+  </div>
+  
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Proje No</th>
+            <th>Tarih</th>
+            <th>Firma Adı</th>
+            <th>Proje Konusu</th>
+            <th>Son Teslim</th>
+            <th>Durum</th>
+            <th>Tutar</th>
+            <th>İşlemler</th>
+          </tr>
+        </thead>
+        <tbody id="projeList">
+          <!-- JavaScript ile doldurulacak -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Proje Modal -->
+<div class="modal fade" id="projeModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Yeni Proje</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="projeForm">
+          <!-- Genel Bilgiler -->
+          <h6 class="border-bottom pb-2">Genel Bilgiler</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Firma</label>
+                <select class="form-select" name="firmaAdi" required>
+                  <!-- JavaScript ile doldurulacak -->
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Bağlı Teklif</label>
+                <select class="form-select" name="teklifNo">
+                  <!-- JavaScript ile doldurulacak -->
+                </select>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="form-label">Proje Konusu</label>
+                <input type="text" class="form-control" name="projeKonusu" required>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">Son Teslim Tarihi</label>
+                <input type="date" class="form-control" name="sonTeslimTarihi">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">Proje Tutarı</label>
+                <input type="number" class="form-control" name="projeTutari">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">Ödeme Şekli</label>
+                <input type="text" class="form-control" name="odemeSekli">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Giderler -->
+          <h6 class="border-bottom pb-2">Giderler</h6>
+          <div id="giderlerContainer">
+            <div class="gider-row row g-3 mb-2">
+              <div class="col-md-2">
+                <input type="text" class="form-control" name="giderAdi[]" placeholder="Gider Adı">
+              </div>
+              <div class="col-md-2">
+                <select class="form-select" name="giderFirma[]">
+                  <!-- JavaScript ile doldurulacak -->
+                </select>
+              </div>
+              <div class="col-md-2">
+                <input type="text" class="form-control" name="aciklama[]" placeholder="Açıklama">
+              </div>
+              <div class="col-md-2">
+                <input type="number" class="form-control" name="miktar[]" placeholder="Miktar">
+              </div>
+              <div class="col-md-2">
+                <input type="number" class="form-control" name="birimFiyat[]" placeholder="Birim Fiyat">
+              </div>
+              <div class="col-md-1">
+                <input type="number" class="form-control" name="kdvOrani[]" placeholder="KDV %">
+              </div>
+              <div class="col-md-1">
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeGider(this)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="addGider()">
+            <i class="fas fa-plus"></i> Gider Ekle
+          </button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" onclick="submitForm('projeForm', 'addProje')">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Proje listesini yükle
+function loadProjeList() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      const tbody = $('#projeList');
+      tbody.empty();
+      
+      data.forEach(function(item) {
+        tbody.append(`
+          <tr>
+            <td>${item.projeNo}</td>
+            <td>${item.projeTarihi}</td>
+            <td>${item.firmaAdi}</td>
+            <td>${item.projeKonusu}</td>
+            <td>${item.sonTeslimTarihi}</td>
+            <td>${item.projeDurumu}</td>
+            <td>${item.projeTutari}</td>
+            <td>
+              <button class="btn btn-sm btn-icon btn-info" onclick="viewProje('${item.id}')">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-icon btn-warning" onclick="editProje('${item.id}')">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-icon btn-danger" onclick="deleteProje('${item.id}')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `);
+      });
+    })
+    .Proje.getList();
+}
+
+// Gider ekleme/çıkarma
+function addGider() {
+  const template = $('#giderlerContainer .gider-row').first().clone();
+  template.find('input').val('');
+  $('#giderlerContainer').append(template);
+}
+
+function removeGider(btn) {
+  if($('#giderlerContainer .gider-row').length > 1) {
+    $(btn).closest('.gider-row').remove();
+  }
+}
+
+// Sayfa yüklendiğinde
+$(document).ready(function() {
+  loadProjeList();
+});
+</script>

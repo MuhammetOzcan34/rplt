@@ -1,0 +1,217 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Teklifler</h5>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#teklifModal">
+      <i class="fas fa-plus"></i> Yeni Teklif
+    </button>
+  </div>
+  
+  <div class="card-body">
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#verilenTeklifler">Verilen Teklifler</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#alinanTeklifler">Alınan Teklifler</a>
+      </li>
+    </ul>
+    
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="verilenTeklifler">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Teklif No</th>
+                <th>Tarih</th>
+                <th>Firma Adı</th>
+                <th>Teklif Konusu</th>
+                <th>Durum</th>
+                <th>Toplam Tutar</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="verilenTeklifList">
+              <!-- JavaScript ile doldurulacak -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="tab-pane fade" id="alinanTeklifler">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Teklif No</th>
+                <th>Tarih</th>
+                <th>Firma Adı</th>
+                <th>Teklif Konusu</th>
+                <th>Durum</th>
+                <th>Toplam Tutar</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="alinanTeklifList">
+              <!-- JavaScript ile doldurulacak -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Teklif Modal -->
+<div class="modal fade" id="teklifModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Yeni Teklif</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="teklifForm">
+          <!-- Genel Bilgiler -->
+          <h6 class="border-bottom pb-2">Genel Bilgiler</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-3">
+              <div class="form-group">
+                <label class="form-label">Teklif Türü</label>
+                <select class="form-select" name="teklifTuru" required>
+                  <option value="Verilen">Verilen Teklif</option>
+                  <option value="Alinan">Alınan Teklif</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label class="form-label">Firma</label>
+                <select class="form-select" name="firmaAdi" required>
+                  <!-- JavaScript ile doldurulacak -->
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label class="form-label">Yetkili Kişi</label>
+                <select class="form-select" name="yetkiliKisi">
+                  <!-- JavaScript ile doldurulacak -->
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <label class="form-label">Geçerlilik Süresi</label>
+                <input type="text" class="form-control" name="gecerlilikSuresi">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Kalemler -->
+          <h6 class="border-bottom pb-2">Kalemler</h6>
+          <div id="kalemlerContainer">
+            <div class="kalem-row row g-3 mb-2">
+              <div class="col-md-3">
+                <input type="text" class="form-control" name="urunHizmet[]" placeholder="Ürün/Hizmet">
+              </div>
+              <div class="col-md-2">
+                <input type="number" class="form-control" name="miktar[]" placeholder="Miktar">
+              </div>
+              <div class="col-md-2">
+                <select class="form-select" name="birim[]">
+                  <option value="Adet">Adet</option>
+                  <option value="Kg">Kg</option>
+                  <option value="Lt">Lt</option>
+                  <option value="Metre">Metre</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <input type="number" class="form-control" name="birimFiyat[]" placeholder="Birim Fiyat">
+              </div>
+              <div class="col-md-2">
+                <input type="number" class="form-control" name="kdvOrani[]" placeholder="KDV %">
+              </div>
+              <div class="col-md-1">
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeKalem(this)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="addKalem()">
+            <i class="fas fa-plus"></i> Kalem Ekle
+          </button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" onclick="submitForm('teklifForm', 'addTeklif')">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Teklif listelerini yükle
+function loadTeklifList() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      const verilenList = $('#verilenTeklifList');
+      const alinanList = $('#alinanTeklifList');
+      
+      verilenList.empty();
+      alinanList.empty();
+      
+      data.forEach(function(item) {
+        const row = `
+          <tr>
+            <td>${item.teklifNo}</td>
+            <td>${item.tarih}</td>
+            <td>${item.firmaAdi}</td>
+            <td>${item.teklifKonusu}</td>
+            <td>${item.teklifDurumu}</td>
+            <td>${item.toplamTutar}</td>
+            <td>
+              <button class="btn btn-sm btn-icon btn-info" onclick="viewTeklif('${item.id}')">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-icon btn-warning" onclick="editTeklif('${item.id}')">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-icon btn-danger" onclick="deleteTeklif('${item.id}')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+        
+        if(item.teklifTuru === 'Verilen') {
+          verilenList.append(row);
+        } else {
+          alinanList.append(row);
+        }
+      });
+    })
+    .Teklif.getList();
+}
+
+// Kalem ekleme/çıkarma
+function addKalem() {
+  const template = $('#kalemlerContainer .kalem-row').first().clone();
+  template.find('input').val('');
+  $('#kalemlerContainer').append(template);
+}
+
+function removeKalem(btn) {
+  if($('#kalemlerContainer .kalem-row').length > 1) {
+    $(btn).closest('.kalem-row').remove();
+  }
+}
+
+// Sayfa yüklendiğinde
+$(document).ready(function() {
+  loadTeklifList();
+});
+</script>
