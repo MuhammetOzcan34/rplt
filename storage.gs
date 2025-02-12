@@ -1,107 +1,78 @@
-import { eq } from 'drizzle-orm';
-import { db } from './db';
-import * as schema from '../shared/schema';
-
-export class DatabaseStorage {
+/**
+ * Veritabanı işlemleri sınıfı
+ */
+function DatabaseStorage() {
   // Cari Hesap İşlemleri
-  async getCariHesap(id: number) {
-    const [cariHesap] = await db
-      .select()
-      .from(schema.cariHesaplar)
-      .where(eq(schema.cariHesaplar.id, id));
-    return cariHesap;
-  }
+  this.getCariHesap = function(id) {
+    const data = selectFromTable('CariHesaplar');
+    return data.find(row => row[0] == id); // id'nin bulunduğu sütun indeksi
+  };
 
-  async getCariHesaplar() {
-    return await db.select().from(schema.cariHesaplar);
-  }
+  this.getCariHesaplar = function() {
+    return selectFromTable('CariHesaplar');
+  };
 
-  async createCariHesap(data: any) {
-    const [cariHesap] = await db
-      .insert(schema.cariHesaplar)
-      .values(data)
-      .returning();
-    return cariHesap;
-  }
+  this.createCariHesap = function(data) {
+    insertIntoTable('CariHesaplar', data);
+  };
 
-  async updateCariHesap(id: number, data: any) {
-    const [updated] = await db
-      .update(schema.cariHesaplar)
-      .set(data)
-      .where(eq(schema.cariHesaplar.id, id))
-      .returning();
-    return updated;
-  }
+  this.updateCariHesap = function(id, data) {
+    const existingData = selectFromTable('CariHesaplar');
+    const rowIndex = existingData.findIndex(row => row[0] == id) + 1; // 1 tabanlı index
+    if (rowIndex > 0) {
+      updateTableRow('CariHesaplar', rowIndex, data);
+    }
+  };
 
-  async deleteCariHesap(id: number) {
-    await db
-      .delete(schema.cariHesaplar)
-      .where(eq(schema.cariHesaplar.id, id));
-    return true;
-  }
+  this.deleteCariHesap = function(id) {
+    const existingData = selectFromTable('CariHesaplar');
+    const rowIndex = existingData.findIndex(row => row[0] == id) + 1; // 1 tabanlı index
+    if (rowIndex > 0) {
+      deleteTableRow('CariHesaplar', rowIndex);
+    }
+  };
 
   // Teklif İşlemleri
-  async getTeklif(id: number) {
-    const [teklif] = await db
-      .select()
-      .from(schema.teklifler)
-      .where(eq(schema.teklifler.id, id));
-    return teklif;
-  }
+  this.getTeklif = function(id) {
+    const data = selectFromTable('Teklifler');
+    return data.find(row => row[0] == id); // id'nin bulunduğu sütun indeksi
+  };
 
-  async getTeklifler() {
-    return await db.select().from(schema.teklifler);
-  }
+  this.getTeklifler = function() {
+    return selectFromTable('Teklifler');
+  };
 
-  async createTeklif(data: any) {
-    const [teklif] = await db
-      .insert(schema.teklifler)
-      .values(data)
-      .returning();
-    return teklif;
-  }
+  this.createTeklif = function(data) {
+    insertIntoTable('Teklifler', data);
+  };
 
   // Proje İşlemleri
-  async getProje(id: number) {
-    const [proje] = await db
-      .select()
-      .from(schema.projeler)
-      .where(eq(schema.projeler.id, id));
-    return proje;
-  }
+  this.getProje = function(id) {
+    const data = selectFromTable('Projeler');
+    return data.find(row => row[0] == id); // id'nin bulunduğu sütun indeksi
+  };
 
-  async getProjeler() {
-    return await db.select().from(schema.projeler);
-  }
+  this.getProjeler = function() {
+    return selectFromTable('Projeler');
+  };
 
-  async createProje(data: any) {
-    const [proje] = await db
-      .insert(schema.projeler)
-      .values(data)
-      .returning();
-    return proje;
-  }
+  this.createProje = function(data) {
+    insertIntoTable('Projeler', data);
+  };
 
   // Görev İşlemleri
-  async getGorev(id: number) {
-    const [gorev] = await db
-      .select()
-      .from(schema.gorevler)
-      .where(eq(schema.gorevler.id, id));
-    return gorev;
-  }
+  this.getGorev = function(id) {
+    const data = selectFromTable('Gorevler');
+    return data.find(row => row[0] == id); // id'nin bulunduğu sütun indeksi
+  };
 
-  async getGorevler() {
-    return await db.select().from(schema.gorevler);
-  }
+  this.getGorevler = function() {
+    return selectFromTable('Gorevler');
+  };
 
-  async createGorev(data: any) {
-    const [gorev] = await db
-      .insert(schema.gorevler)
-      .values(data)
-      .returning();
-    return gorev;
-  }
+  this.createGorev = function(data) {
+    insertIntoTable('Gorevler', data);
+  };
 }
 
-export const storage = new DatabaseStorage();
+const storage = new DatabaseStorage();
