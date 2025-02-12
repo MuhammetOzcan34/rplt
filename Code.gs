@@ -26,8 +26,8 @@ function loadPage(page) {
 }
 
 // Global ayarlar
-const SHEET_ID = '10j6_p6gyTQfEW0OiQPJGljg7mg1XArwQvoOIviVCo34';
-const DRIVE_FOLDER = '1CWD2kEdiNCDIt8cyU_8HUkw78JUIzHgn';
+const SHEET_ID = '10j6_p6gyTQfEW0OiQPJGljg7mg1XArwQvoOIviVCo34'; // Buraya Google Sheets ID'sini yazın
+const DRIVE_FOLDER = '1CWD2kEdiNCDIt8cyU_8HUkw78JUIzHgn'; // Buraya Google Drive klasör ID'sini yazın
 
 // Sayfa yönlendirmeleri
 function handlePageLoad(page) {
