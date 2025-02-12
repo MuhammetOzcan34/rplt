@@ -13,24 +13,24 @@ class Database {
       // Spreadsheet'i aç
       const ss = SpreadsheetApp.openById(SHEET_ID);
       if (!ss) {
-        throw new Error('Spreadsheet açılamadı');
+        throw new Error('Spreadsheet açılmadı');
       }
       Logger.log('Spreadsheet başarıyla açıldı');
 
       // Sayfayı kontrol et
       const sheet = ss.getSheetByName(sheetName);
       if (!sheet) {
-        Logger.log(`Hata: "${sheetName}" sayfası bulunamadı`);
+        Logger.log(`Hata: \"${sheetName}\" sayfası bulunamadı`);
         // Sayfayı otomatik oluştur
         const newSheet = ss.insertSheet(sheetName);
         // Başlık satırını ekle
         const headers = ['ID', 'Firma Adı', 'Şube/Bölge', 'Firma Türü', 'Yetkili Kişi', 'Telefon', 'Email', 'Görev Sayısı', 'Proje Sayısı'];
         newSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-        Logger.log(`"${sheetName}" sayfası oluşturuldu`);
+        Logger.log(`\"${sheetName}\" sayfası oluşturuldu`);
         return newSheet;
       }
 
-      Logger.log(`"${sheetName}" sayfası başarıyla açıldı`);
+      Logger.log(`\"${sheetName}\" sayfası başarıyla açıldı`);
       return sheet;
     } catch (e) {
       Logger.log('getSheet Hatası: ' + e.toString());
