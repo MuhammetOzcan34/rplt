@@ -1,117 +1,205 @@
-...
-<div class="modal-footer">
-  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-  <button type="button" class="btn btn-primary" onclick="submitForm('cariHesapForm', 'CariHesap.add')">Kaydet</button>
-</div>
-...
-<script>
-function loadCariHesapList() {
-  google.script.run
-    .withSuccessHandler(function(data) {
-      const tbody = $('#cariHesapList');
-      tbody.empty();
-      data.forEach(function(item) {
-        tbody.append(`
-          <tr>
-            <td>${item.firmaAdi}</td>
-            <td>${item.subeBolge}</td>
-            <td>${item.firmaTuru}</td>
-            <td>${item.yetkiliKisi}</td>
-            <td>${item.telefon}</td>
-            <td>${item.email}</td>
-            <td>
-              <a href="#" onclick="showGorevler('${item.id}')">${item.gorevSayisi}</a>
-            </td>
-            <td>
-              <a href="#" onclick="showProjeler('${item.id}')">${item.projeSayisi}</a>
-            </td>
-            <td>
-              <button class="btn btn-sm btn-icon btn-warning" onclick="editCariHesap('${item.id}')">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-sm btn-icon btn-danger" onclick="deleteCariHesap('${item.id}')">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `);
-      });
-    })
-    .withFailureHandler(function(error) {
-      console.error("Cari hesap listesi yüklenirken hata oluştu:", error);
-      alert("Cari hesap listesi yüklenirken bir hata oluştu. Lütfen tekrar deneyin.");
-    })
-    .CariHesap.getList();
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cari Hesaplar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Cari Hesaplar</h3>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cariHesapModal">Yeni Hesap Ekle</button>
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Firma Adı</th>
+                    <th>Şube/Bölge</th>
+                    <th>Firma Türü</th>
+                    <th>Yetkili Kişi</th>
+                    <th>Telefon</th>
+                    <th>E-posta</th>
+                    <th>Görev Sayısı</th>
+                    <th>Proje Sayısı</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody id="cariHesapList">
+                <!-- JavaScript ile doldurulacak -->
+            </tbody>
+        </table>
+    </div>
 
-function submitForm(formId, action) {
-  const form = document.getElementById(formId);
-  const formData = new FormData(form);
-  const data = {};
-  formData.forEach((value, key) => data[key] = value);
+    <!-- Cari Hesap Modal -->
+    <div class="modal fade" id="cariHesapModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Cari Hesap</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="cariHesapForm">
+                        <div class="mb-3">
+                            <label class="form-label">Firma Adı</label>
+                            <input type="text" class="form-control" name="firmaAdi" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Şube/Bölge</label>
+                                    <input type="text" class="form-control" name="subeBolge">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Firma Türü</label>
+                                    <input type="text" class="form-control" name="firmaTuru" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Yetkili Kişi</label>
+                                    <input type="text" class="form-control" name="yetkiliKisi">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Telefon</label>
+                                    <input type="tel" class="form-control" name="telefon">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">E-posta</label>
+                            <input type="email" class="form-control" name="email">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitForm('cariHesapForm', 'CariHesap.add')">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  google.script.run
-    .withSuccessHandler(function(result) {
-      if (result) {
-        alert('Cari hesap başarıyla kaydedildi.');
-        form.reset();
-        $('#cariHesapModal').modal('hide');
-        loadCariHesapList();
-      } else {
-        alert('Cari hesap kaydedilirken bir hata oluştu.');
-      }
-    })
-    .withFailureHandler(function(error) {
-      console.error("Cari hesap kaydedilirken hata oluştu:", error);
-      alert('Hata: ' + error.message);
-    })[action](data);
-}
+    <script>
+    function loadCariHesapList() {
+        google.script.run
+            .withSuccessHandler(function(data) {
+                const tbody = $('#cariHesapList');
+                tbody.empty();
+                data.forEach(function(item) {
+                    tbody.append(`
+                        <tr>
+                            <td>${item.firmaAdi}</td>
+                            <td>${item.subeBolge}</td>
+                            <td>${item.firmaTuru}</td>
+                            <td>${item.yetkiliKisi}</td>
+                            <td>${item.telefon}</td>
+                            <td>${item.email}</td>
+                            <td>
+                                <a href="#" onclick="showGorevler('${item.id}')">${item.gorevSayisi}</a>
+                            </td>
+                            <td>
+                                <a href="#" onclick="showProjeler('${item.id}')">${item.projeSayisi}</a>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-icon btn-warning" onclick="editCariHesap('${item.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-icon btn-danger" onclick="deleteCariHesap('${item.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            })
+            .withFailureHandler(function(error) {
+                console.error("Cari hesap listesi yüklenirken hata oluştu:", error);
+                alert("Cari hesap listesi yüklenirken bir hata oluştu. Lütfen tekrar deneyin.");
+            })
+            .CariHesap.getList();
+    }
 
-function editCariHesap(id) {
-  google.script.run
-    .withSuccessHandler(function(item) {
-      if (item) {
-        document.forms["cariHesapForm"]["firmaAdi"].value = item.firmaAdi;
-        document.forms["cariHesapForm"]["subeBolge"].value = item.subeBolge;
-        document.forms["cariHesapForm"]["firmaTuru"].value = item.firmaTuru;
-        document.forms["cariHesapForm"]["yetkiliKisi"].value = item.yetkiliKisi;
-        document.forms["cariHesapForm"]["telefon"].value = item.telefon;
-        document.forms["cariHesapForm"]["email"].value = item.email;
-        $(".modal-title").text("Cari Hesap Düzenle");
-        $("#cariHesapForm").data("id", id);
-        $("#cariHesapModal").modal("show");
-      } else {
-        alert("Cari hesap bulunamadı.");
-      }
-    })
-    .withFailureHandler(function(error) {
-      console.error("Cari hesap bilgileri alınırken hata oluştu:", error);
-      alert("Hata: " + error.message);
-    })
-    .CariHesap.getList(id);
-}
+    function submitForm(formId, action) {
+        const form = document.getElementById(formId);
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => data[key] = value);
 
-function deleteCariHesap(id) {
-  if (confirm("Bu cari hesabı silmek istediğinizden emin misiniz?")) {
-    google.script.run
-      .withSuccessHandler(function(result) {
-        if (result) {
-          alert("Cari hesap başarıyla silindi.");
-          loadCariHesapList();
-        } else {
-          alert("Cari hesap silinirken bir hata oluştu.");
+        google.script.run
+            .withSuccessHandler(function(result) {
+                if (result) {
+                    alert('Cari hesap başarıyla kaydedildi.');
+                    form.reset();
+                    $('#cariHesapModal').modal('hide');
+                    loadCariHesapList();
+                } else {
+                    alert('Cari hesap kaydedilirken bir hata oluştu.');
+                }
+            })
+            .withFailureHandler(function(error) {
+                console.error("Cari hesap kaydedilirken hata oluştu:", error);
+                alert('Hata: ' + error.message);
+            })[action](data);
+    }
+
+    function editCariHesap(id) {
+        google.script.run
+            .withSuccessHandler(function(item) {
+                if (item) {
+                    document.forms["cariHesapForm"]["firmaAdi"].value = item.firmaAdi;
+                    document.forms["cariHesapForm"]["subeBolge"].value = item.subeBolge;
+                    document.forms["cariHesapForm"]["firmaTuru"].value = item.firmaTuru;
+                    document.forms["cariHesapForm"]["yetkiliKisi"].value = item.yetkiliKisi;
+                    document.forms["cariHesapForm"]["telefon"].value = item.telefon;
+                    document.forms["cariHesapForm"]["email"].value = item.email;
+                    $(".modal-title").text("Cari Hesap Düzenle");
+                    $("#cariHesapForm").data("id", id);
+                    $("#cariHesapModal").modal("show");
+                } else {
+                    alert("Cari hesap bulunamadı.");
+                }
+            })
+            .withFailureHandler(function(error) {
+                console.error("Cari hesap bilgileri alınırken hata oluştu:", error);
+                alert("Hata: " + error.message);
+            })
+            .CariHesap.getList(id);
+    }
+
+    function deleteCariHesap(id) {
+        if (confirm("Bu cari hesabı silmek istediğinizden emin misiniz?")) {
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result) {
+                        alert("Cari hesap başarıyla silindi.");
+                        loadCariHesapList();
+                    } else {
+                        alert("Cari hesap silinirken bir hata oluştu.");
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error("Cari hesap silinirken hata oluştu:", error);
+                    alert("Hata: " + error.message);
+                })
+                .CariHesap.delete(id);
         }
-      })
-      .withFailureHandler(function(error) {
-        console.error("Cari hesap silinirken hata oluştu:", error);
-        alert("Hata: " + error.message);
-      })
-      .CariHesap.delete(id);
-  }
-}
+    }
 
-$(document).ready(function() {
-  loadCariHesapList();
-});
-</script>
-...
+    $(document).ready(function() {
+        loadCariHesapList();
+    });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
