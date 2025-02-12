@@ -86,12 +86,11 @@ function submitForm(formId, handler) {
   google.script.run
     .withSuccessHandler(function(result) {
       showAlert('success', 'İşlem başarılı');
-      loadPage(handler);
+      loadPage('carihesap');
     })
     .withFailureHandler(function(error) {
       showAlert('danger', error.message);
-    })
-    [handler](data);
+    })[handler](data);
 }
 
 // Yazdırma
