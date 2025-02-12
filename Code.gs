@@ -30,7 +30,7 @@ const SHEET_ID = '10j6_p6gyTQfEW0OiQPJGljg7mg1XArwQvoOIviVCo34'; // Buraya Googl
 const DRIVE_FOLDER = '1CWD2kEdiNCDIt8cyU_8HUkw78JUIzHgn'; // Buraya Google Drive klasör ID'sini yazın
 
 // Sayfa yönlendirmeleri
-function handlePageLoad(page) {
+function handlePageLoad(page, search) {
   try {
     Logger.log('handlePageLoad çağrıldı: ' + page);
 
@@ -42,22 +42,22 @@ function handlePageLoad(page) {
     let data;
     switch(page) {
       case 'carihesap':
-        data = CariHesap.getList();
+        data = CariHesap.getList(search);
         break;
       case 'teklif': 
-        data = Teklif.getList();
+        data = Teklif.getList(search);
         break;
       case 'proje':
-        data = Proje.getList();
+        data = Proje.getList(search);
         break;
       case 'gorev':
-        data = Gorev.getList();
+        data = Gorev.getList(search);
         break;
       case 'rapor':
-        data = Rapor.getList();
+        data = Rapor.getList(search);
         break;
       default:
-        data = CariHesap.getList();
+        data = CariHesap.getList(search);
     }
     Logger.log('Sayfa verileri yüklendi');
 
