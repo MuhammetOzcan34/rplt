@@ -211,7 +211,68 @@ function removeKalem(btn) {
 }
 
 // Sayfa yüklendiğinde
+// Firma ve yetkili kişi listelerini doldur
+function loadFirmaListesi() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      const firmaSelect = $('select[name="firmaAdi"]');
+      const yetkiliSelect = $('select[name="yetkiliKisi"]');
+      
+      firmaSelect.empty();
+      yetkiliSelect.empty();
+      
+      firmaSelect.append('<option value="">Seçiniz...</option>');
+      yetkiliSelect.append('<option value="">Seçiniz...</option>');
+      
+      const firmalar = [];
+      const yetkililer = new Set();
+      
+      data.forEach(function(item) {
+        if (item.firmaAdi && !firmalar.includes(item.firmaAdi)) {
+          firmalar.push(item.firmaAdi);
+          firmaSelect.append(`<option value="${item.firmaAdi}">${item.firmaAdi}</option>`);
+        }
+        if (item.yetkiliKisi && !yetkililer.has(item.yetkiliKisi)) {
+          yetkililer.add(item.yetkiliKisi);
+        }
+      });
+      
+      firmaSelect.on('change', function() {
+        const seciliFirma = $(this).val();
+        yetkiliSelect.empty().append('<option value="">Seçiniz...</option>');
+        
+        if (seciliFirma) {
+          const firmaYetkilileri = data
+            .filter(item => item.firmaAdi === seciliFirma && item.yetkiliKisi)
+            .map(item => item.yetkiliKisi);
+            
+          firmaYetkilileri.forEach(yetkili => {
+            yetkiliSelect.append(`<option value="${yetkili}">${yetkili}</option>`);
+          });
+        }
+      });
+      
+      // Firma değişikliğinde yetkili kişiyi güncelle
+      firmaSelect.off('change').on('change', function() {
+        const selectedOption = $(this).find('option:selected');
+        const yetkiliKisi = selectedOption.data('yetkili');
+        
+        yetkiliSelect.empty().append('<option value="">Seçiniz...</option>');
+        if (yetkiliKisi) {
+          yetkiliSelect.append(`<option value="${yetkiliKisi}" selected>${yetkiliKisi}</option>`);
+        }
+      });
+    })
+    .CariHesap.getList();
+}
+
 $(document).ready(function() {
   loadTeklifList();
+  loadFirmaListesi();
+});
+
+$(document).ready(function() {
+  loadTeklifList();
+  loadFirmaListesi();
 });
 </script>
