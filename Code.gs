@@ -30,41 +30,55 @@ const SHEET_ID = '10j6_p6gyTQfEW0OiQPJGljg7mg1XArwQvoOIviVCo34'; // Buraya Googl
 const DRIVE_FOLDER = '1CWD2kEdiNCDIt8cyU_8HUkw78JUIzHgn'; // Buraya Google Drive klasör ID'sini yazın
 
 // Sayfa yönlendirmeleri
-function handlePageLoad(page, search) {
+function handlePageLoad(page, action = '', data = null) {
   try {
-    Logger.log('handlePageLoad çağrıldı: ' + page);
+    Logger.log('handlePageLoad çağrıldı: ' + page + ', action: ' + action);
 
-    // Önce HTML içeriğini yükle
+    if (action === 'add') {
+      switch(page) {
+        case 'carihesap':
+          return CariHesap.add(data);
+        case 'teklif':
+          return Teklif.add(data);
+        case 'proje':
+          return Proje.add(data);
+        case 'gorev':
+          return Gorev.add(data);
+        default:
+          throw new Error('Geçersiz işlem');
+      }
+    }
+
+    // Sayfa yükleme işlemi
     const html = loadPage(page + '.html');
     Logger.log('Sayfa HTML içeriği yüklendi');
 
-    // Sonra verileri yükle
-    let data;
+    // Verileri yükle
+    let pageData;
     switch(page) {
       case 'carihesap':
-        data = CariHesap.getList(search);
+        pageData = CariHesap.getList();
         break;
       case 'teklif': 
-        data = Teklif.getList(search);
+        pageData = Teklif.getList();
         break;
       case 'proje':
-        data = Proje.getList(search);
+        pageData = Proje.getList();
         break;
       case 'gorev':
-        data = Gorev.getList(search);
+        pageData = Gorev.getList();
         break;
       case 'rapor':
-        data = Rapor.getList(search);
+        pageData = Rapor.getList();
         break;
       default:
-        data = CariHesap.getList(search);
+        pageData = CariHesap.getList();
     }
     Logger.log('Sayfa verileri yüklendi');
 
-    // Her ikisini birden döndür
     return {
       html: html,
-      data: data
+      data: pageData
     };
   } catch(e) {
     Logger.log('handlePageLoad hatası: ' + e.toString());
