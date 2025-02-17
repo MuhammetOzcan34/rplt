@@ -30,7 +30,12 @@ class CariHesap {
 
   static add(data) {
     try {
-      Utilities.validateRequired(data, ['firmaAdi', 'firmaTuru']);
+      Logger.log('Gelen veri:', data);
+      
+      if (!data.firmaAdi || !data.firmaTuru) {
+        throw new Error('Firma adı ve firma türü zorunludur');
+      }
+      
       const id = Utilities.generateId();
       const row = [
         id,
@@ -40,13 +45,23 @@ class CariHesap {
         data.yetkiliKisi || '',
         data.telefon || '',
         data.email || '',
-        0, 
-        0
+        0, // Görev sayısı
+        0  // Proje sayısı
       ];
-
-      Database.insert('CariHesaplar', row);
-      return id;
+      
+      Logger.log('Oluşturulan satır:', row);
+      
+      if (Database.insert('CariHesaplar', row)) {
+        return {
+          success: true,
+          message: 'Cari hesap başarıyla eklendi',
+          id: id
+        };
+      } else {
+        throw new Error('Veri eklenemedi');
+      }
     } catch(e) {
+      Logger.log('Hata:', e.toString());
       throw e;
     }
   }
