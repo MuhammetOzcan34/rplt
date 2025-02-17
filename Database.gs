@@ -74,8 +74,28 @@ class Database {
     try {
       Logger.log(`insert çağrıldı: ${sheetName}`);
       Logger.log('Eklenecek veri: ' + JSON.stringify(data));
+      
       const sheet = this.getSheet(sheetName);
-      sheet.appendRow(data);
+      if (!sheet) {
+        throw new Error(`${sheetName} sayfası bulunamadı`);
+      }
+
+      // Veriyi doğrudan ekle
+      const row = [
+        data[0], // id
+        data[1], // firmaAdi
+        data[2], // subeBolge
+        data[3], // firmaTuru
+        data[4], // yetkiliKisi
+        data[5], // telefon
+        data[6], // email
+        data[7], // gorevSayisi
+        data[8]  // projeSayisi
+      ];
+      
+      Logger.log('Eklenecek satır:', row);
+      sheet.appendRow(row);
+      
       Logger.log('Veri başarıyla eklendi');
       return true;
     } catch (e) {
