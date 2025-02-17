@@ -57,7 +57,11 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Firma Türü</label>
-                                    <input type="text" class="form-control" name="firmaTuru" required>
+                                    <select class="form-select" name="firmaTuru" required>
+                                        <option value="">Seçiniz...</option>
+                                        <option value="Alıcı">Alıcı</option>
+                                        <option value="Satıcı">Satıcı</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -83,7 +87,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                    <button type="button" class="btn btn-primary" onclick="submitForm('cariHesapForm', 'CariHesap.add')">Kaydet</button>
+                    <button type="button" class="btn btn-primary" onclick="submitForm('cariHesapForm')">Kaydet</button>
                 </div>
             </div>
         </div>
@@ -129,27 +133,39 @@
             .CariHesap.getList();
     }
 
-    function submitForm(formId, action) {
+    function submitForm(formId) {
         const form = document.getElementById(formId);
         const formData = new FormData(form);
         const data = {};
-        formData.forEach((value, key) => data[key] = value);
+
+        formData.forEach((value, key) => {
+            if (value) {
+                data[key] = value;
+            }
+        });
 
         google.script.run
             .withSuccessHandler(function(result) {
-                if (result) {
-                    alert('Cari hesap başarıyla kaydedildi.');
+                if (result && result.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('cariHesapModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
                     form.reset();
-                    $('#cariHesapModal').modal('hide');
-                    loadCariHesapList();
+                    
+                    // Modal kapatıldıktan sonra sayfayı yenile
+                    setTimeout(function() {
+                        window.location.href = window.location.pathname;
+                    }, 500);
                 } else {
-                    alert('Cari hesap kaydedilirken bir hata oluştu.');
+                    alert('Kayıt başarısız: ' + (result.message || 'Bilinmeyen hata'));
                 }
             })
             .withFailureHandler(function(error) {
-                console.error("Cari hesap kaydedilirken hata oluştu:", error);
-                alert('Hata: ' + error.message);
-            })[action](data);
+                console.error('Form gönderme hatası:', error);
+                alert('Hata: ' + (error.message || 'Bir hata oluştu, lütfen tekrar deneyin'));
+            })
+            .handlePageLoad('carihesap', 'add', data);
     }
 
     function editCariHesap(id) {
@@ -201,5 +217,16 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            loadCariHesapList();
+            
+            // Modal açıldığında formu sıfırla
+            $('#cariHesapModal').on('show.bs.modal', function () {
+                $('#cariHesapForm')[0].reset();
+                $('.modal-title').text('Yeni Cari Hesap');
+            });
+        });
+    </script>
 </body>
 </html>
