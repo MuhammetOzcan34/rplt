@@ -144,43 +144,44 @@ function showAlert(type, message) {
 }
 
 function loadCariHesapList() {
-  google.script.run
-    .withSuccessHandler(function(data) {
-      const tbody = $("#cariHesapList");
-      tbody.empty();
-      data.forEach(function(item) {
-        tbody.append(`
-          <tr>
-            <td>${item.firmaAdi}</td>
-            <td>${item.subeBolge}</td>
-            <td>${item.firmaTuru}</td>
-            <td>${item.yetkiliKisi}</td>
-            <td>${item.telefon}</td>
-            <td>${item.email}</td>
-            <td>
-              <a href="#" onclick="showGorevler('${item.id}')">${item.gorevSayisi}</a>
-            </td>
-            <td>
-              <a href="#" onclick="showProjeler('${item.id}')">${item.projeSayisi}</a>
-            </td>
-            <td>
-              <button class="btn btn-sm btn-icon btn-warning" onclick="editCariHesap('${item.id}')">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-sm btn-icon btn-danger" onclick="deleteCariHesap('${item.id}')">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `);
-      });
-    })
-    .withFailureHandler(function(error) {
-      console.error("Cari hesap listesi yüklenirken hata oluştu:", error);
-      alert("Cari hesap listesi yüklenirken bir hata oluştu. Lütfen tekrar deneyin.");
-    })
-    .CariHesap.getList(); // Düzeltilmiş satır
+    google.script.run
+        .withSuccessHandler(function(data) {
+            const tbody = $("#cariHesapList");
+            tbody.empty();
+            data.forEach(function(item) {
+                tbody.append(`
+                    <tr>
+                        <td>${item.firmaAdi}</td>
+                        <td>${item.subeBolge}</td>
+                        <td>${item.firmaTuru}</td>
+                        <td>${item.yetkiliKisi}</td>
+                        <td>${item.telefon}</td>
+                        <td>${item.email}</td>
+                        <td>
+                            <a href="#" onclick="showGorevler('${item.id}')">${item.gorevSayisi}</a>
+                        </td>
+                        <td>
+                            <a href="#" onclick="showProjeler('${item.id}')">${item.projeSayisi}</a>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-icon btn-warning" onclick="editCariHesap('${item.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-icon btn-danger" onclick="deleteCariHesap('${item.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+        })
+        .withFailureHandler(function(error) {
+            console.error("Cari hesap listesi yüklenirken hata oluştu:", error);
+            alert("Cari hesap listesi yüklenirken bir hata oluştu. Lütfen tekrar deneyin.");
+        })
+        .getList(); // `CariHesap.getList();` yerine doğrudan çağır
 }
+
 
 function submitForm(formId) {
     const form = document.getElementById(formId);
