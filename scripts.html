@@ -81,6 +81,7 @@ function submitForm(form, handler) {
   
   formData.forEach((value, key) => {
     if (key.endsWith('[]')) {
+      // Array tipindeki form alanları için
       const cleanKey = key.slice(0, -2);
       if (!data[cleanKey]) {
         data[cleanKey] = [];
@@ -99,7 +100,6 @@ function submitForm(form, handler) {
       if (modal) {
         modal.hide();
       }
-      // Mevcut sayfayı yeniden yükle
       loadPage(getCurrentPage());
     })
     .withFailureHandler(function(error) {
@@ -141,5 +141,113 @@ function showAlert(type, message) {
 
   $('#alertArea').html(alert);
   setTimeout(() => $('#alertArea').html(''), 3000);
+}
+
+// Cari Hesap İşlemleri
+function editCariHesap(id) {
+  // ... (Cari hesabı düzenleme işlemini buraya ekleyin)
+}
+
+function deleteCariHesap(id) {
+  if (confirm('Seçilen cari hesabı silmek istediğinizden emin misiniz?')) {
+    google.script.run
+      .withSuccessHandler(function(result) {
+        showAlert('success', 'Cari hesap başarıyla silindi');
+        loadPage('carihesap'); // Sayfayı yeniden yükle
+      })
+      .withFailureHandler(function(error) {
+        showAlert('danger', error.message || 'Cari hesabı silerken bir hata oluştu');
+        console.error('Cari hesabı silerken hata:', error);
+      })
+      .CariHesap.delete(id);
+  }
+}
+
+function showGorevler(cariHesapId) {
+  // ... (Cari hesaba ait görevleri gösteren modal veya başka bir işlem ekleyin)
+}
+
+function showProjeler(cariHesapId) {
+  // ... (Cari hesaba ait projeleri gösteren modal veya başka bir işlem ekleyin)
+}
+
+// Yeni Cari Hesap Ekleme
+function submitForm(formId) {
+  const form = document.getElementById(formId);
+  const formData = new FormData(form);
+  const data = {};
+
+  formData.forEach((value, key) => {
+    if (value) {
+      data[key] = value;
+    }
+  });
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (result && result.success) {
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById("cariHesapModal"),
+        );
+        if (modal) {
+          modal.hide();
+        }
+        form.reset();
+        loadCariHesapList();
+      } else {
+        alert(
+          "Kayıt başarısız: " +
+            (result.message || "Bilinmeyen hata"),
+        );
+      }
+    })
+    .withFailureHandler(function(error) {
+      console.error("Form gönderme hatası:", error);
+      alert(
+        "Hata: " +
+          (error.message ||
+            "Bir hata oluştu, lütfen tekrar deneyin"),
+      );
+    })
+    .handlePageLoad("carihesap", "add", data);
+}
+
+function loadCariHesapList() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      const tbody = $("#cariHesapList");
+      tbody.empty();
+      data.forEach(function(item) {
+        tbody.append(`
+          <tr>
+            <td>${item.firmaAdi}</td>
+            <td>${item.subeBolge}</td>
+            <td>${item.firmaTuru}</td>
+            <td>${item.yetkiliKisi}</td>
+            <td>${item.telefon}</td>
+            <td>${item.email}</td>
+            <td>
+              <a href="#" onclick="showGorevler('${item.id}')">${item.gorevSayisi}</a>
+            </td>
+            <td>
+              <a href="#" onclick="showProjeler('${item.id}')">${item.projeSayisi}</a>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-icon btn-warning" onclick="editCariHesap('${item.id}')">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-icon btn-danger" onclick="deleteCariHesap('${item.id}')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `);
+      });
+    })
+    .withFailureHandler(function(error) {
+      console.error("Cari hesap listesi yüklenirken hata oluştu:", error);
+      alert("Cari hesap listesi yüklenirken bir hata oluştu. Lütfen tekrar deneyin.");
+    })
+    .CariHesap.getList();
 }
 </script>
