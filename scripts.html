@@ -81,7 +81,6 @@ function submitForm(form, handler) {
   
   formData.forEach((value, key) => {
     if (key.endsWith('[]')) {
-      // Array tipindeki form alanları için
       const cleanKey = key.slice(0, -2);
       if (!data[cleanKey]) {
         data[cleanKey] = [];
@@ -100,6 +99,7 @@ function submitForm(form, handler) {
       if (modal) {
         modal.hide();
       }
+      // Mevcut sayfayı yeniden yükle
       loadPage(getCurrentPage());
     })
     .withFailureHandler(function(error) {
