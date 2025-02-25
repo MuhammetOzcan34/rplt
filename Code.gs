@@ -15,7 +15,7 @@ function include(filename) {
 function loadPage(page) {
   try {
     Logger.log('Yüklenen sayfa: ' + page);
-    const template = HtmlService.createTemplateFromFile('templates/' + page);
+    const template = HtmlService.createTemplateFromFile('templates/' + page + '.html');
     const html = template.evaluate().getContent();
     Logger.log('Sayfa içeriği yüklendi');
     return html;
