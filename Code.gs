@@ -75,7 +75,7 @@ function handlePageLoad(page, search = "", pageNumber = 1) {
 
     return {
       html: html,
-      data: pageData.data // Sadece veri kısmını döndür
+      data: pageData // Sadece veri kısmını döndür
     };
   } catch (e) {
     Logger.log('handlePageLoad hatası: ' + e.toString());
