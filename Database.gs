@@ -1,4 +1,3 @@
-// Veritabanı işlemleri
 class Database {
   static getSheet(sheetName) {
     try {
