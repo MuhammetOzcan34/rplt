@@ -1,4 +1,3 @@
-
 class Utilities {
   static generateId() {
     return Utilities.getUuid();
