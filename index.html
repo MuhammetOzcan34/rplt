@@ -173,10 +173,10 @@ function loadPage(page) {
 
 // Header'daki bağlantılar için event.preventDefault() ekleme
 document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll("header a").forEach(link => {
+  document.querySelectorAll(".nav-link").forEach(link => {
     link.addEventListener("click", function (event) {
       event.preventDefault(); // Sayfanın yenilenmesini önler
-      let targetPage = this.getAttribute("href"); // Hedef sayfayı al
+      let targetPage = this.getAttribute("href").replace("#", ""); // Hedef sayfayı al
       loadPage(targetPage); // Sayfayı yükleme fonksiyonunu çağır
     });
   });
