@@ -1,159 +1,125 @@
 <!-- templates/carihesap.html -->
 <div class="container mt-5">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Cari Hesaplar</h3>
-  </div>
-  
-  <!-- Tab Menü -->
-  <ul class="nav nav-tabs" id="myTab" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="cariHesapListesi-tab" data-bs-toggle="tab" data-bs-target="#cariHesapListesi" type="button" role="tab" aria-controls="cariHesapListesi" aria-selected="true">
-        Cari Hesap Listesi
-      </button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="yeniCariHesap-tab" data-bs-toggle="tab" data-bs-target="#yeniCariHesap" type="button" role="tab" aria-controls="yeniCariHesap" aria-selected="false">
-        Yeni Cari Hesap Ekle
-      </button>
-    </li>
-  </ul>
-  
-  <!-- Tab İçerikleri -->
-  <div class="tab-content" id="myTabContent">
-    <!-- Cari Hesap Listesi -->
-    <div class="tab-pane fade show active" id="cariHesapListesi" role="tabpanel" aria-labelledby="cariHesapListesi-tab">
-      <div class="table-responsive mt-3">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>Firma Adı</th>
-              <th>Şube/Bölge</th>
-              <th>Firma Türü</th>
-              <th>Yetkili Kişi</th>
-              <th>Telefon</th>
-              <th>E-posta</th>
-              <th>Görev Sayısı</th>
-              <th>Proje Sayısı</th>
-              <th>İşlemler</th>
-            </tr>
-          </thead>
-          <tbody id="cariHesapList">
-            <!-- JavaScript ile doldurulacak -->
-          </tbody>
-        </table>
-      </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Cari Hesaplar</h3>
     </div>
-    
-    <!-- Yeni Cari Hesap Ekle -->
-    <div class="tab-pane fade" id="yeniCariHesap" role="tabpanel" aria-labelledby="yeniCariHesap-tab">
-      <form id="cariHesapForm" class="mt-3" onsubmit="submitCariHesapForm(event)">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="mb-3">
-              <label class="form-label">Firma Adı</label>
-              <input type="text" class="form-control" name="firmaAdi" required>
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="cariHesapListesi-tab" data-bs-toggle="tab" data-bs-target="#cariHesapListesi" type="button" role="tab" aria-controls="cariHesapListesi" aria-selected="true">
+                Cari Hesap Listesi
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="yeniCariHesap-tab" data-bs-toggle="tab" data-bs-target="#yeniCariHesap" type="button" role="tab" aria-controls="yeniCariHesap" aria-selected="false">
+                Yeni Cari Hesap Ekle
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="cariHesapListesi" role="tabpanel" aria-labelledby="cariHesapListesi-tab">
+            <div class="table-responsive mt-3">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Firma Adı</th>
+                            <th>Şube/Bölge</th>
+                            <th>Firma Türü</th>
+                            <th>Yetkili Kişi</th>
+                            <th>Telefon</th>
+                            <th>E-posta</th>
+                            <th>Görev Sayısı</th>
+                            <th>Proje Sayısı</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cariHesapList">
+                        <!-- JavaScript ile doldurulacak -->
+                    </tbody>
+                </table>
             </div>
-          </div>
-          <div class="col-md-6">
-            <div class="mb-3">
-              <label class="form-label">Şube/Bölge</label>
-              <input type="text" class="form-control" name="subeBolge">
-            </div>
-          </div>
         </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="mb-3">
-              <label class="form-label">Firma Türü</label>
-              <select class="form-select" name="firmaTuru" required>
-                <option value="Alıcı">Alıcı</option>
-                <option value="Satıcı">Satıcı</option>
-              </select>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="mb-3">
-              <label class="form-label">Yetkili Kişi</label>
-              <input type="text" class="form-control" name="yetkiliKisi">
-            </div>
-          </div>
+
+        <div class="tab-pane fade" id="yeniCariHesap" role="tabpanel" aria-labelledby="yeniCariHesap-tab">
+            <form id="cariHesapForm" class="mt-3" onsubmit="submitCariHesapForm(event)">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Firma Adı</label>
+                            <input type="text" class="form-control" name="firmaAdi" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Şube/Bölge</label>
+                            <input type="text" class="form-control" name="subeBolge">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Firma Türü</label>
+                            <select class="form-select" name="firmaTuru" required>
+                                <option value="Alıcı">Alıcı</option>
+                                <option value="Satıcı">Satıcı</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Yetkili Kişi</label>
+                            <input type="text" class="form-control" name="yetkiliKisi">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Telefon</label>
+                            <input type="tel" class="form-control" name="telefon">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">E-posta</label>
+                            <input type="email" class="form-control" name="email">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </form>
         </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="mb-3">
-              <label class="form-label">Telefon</label>
-              <input type="tel" class="form-control" name="telefon">
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="mb-3">
-              <label class="form-label">E-posta</label>
-              <input type="email" class="form-control" name="email">
-            </div>
-          </div>
-        </div>
-        <button type="submit" class="btn btn-primary">Kaydet</button>
-      </form>
     </div>
-  </div>
 </div>
 
-<!-- JavaScript Fonksiyonları -->
 <script>
-// Cari Hesap listesini yükle
-function loadCariHesapList(data) {
-  const tbody = $('#cariHesapList');
-  tbody.empty();
-  
-  data.forEach(function(item) {
-    tbody.append(`
-      <tr>
-        <td>${item.firmaAdi}</td>
-        <td>${item.subeBolge || '-'}</td>
-        <td>${item.firmaTuru}</td>
-        <td>${item.yetkiliKisi || '-'}</td>
-        <td>${item.telefon || '-'}</td>
-        <td>${item.email || '-'}</td>
-        <td>${item.gorevSayisi || 0}</td>
-        <td>${item.projeSayisi || 0}</td>
-        <td>
-          <button class="btn btn-sm btn-icon btn-warning" onclick="editCariHesap('${item.id}')">
-            <i class="fas fa-edit"></i>
-          </button>
-          <button class="btn btn-sm btn-icon btn-danger" onclick="deleteCariHesap('${item.id}')">
-            <i class="fas fa-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `);
-  });
-}
+    // Yeni Cari Hesap Formu Gönderme
+    function submitCariHesapForm(event) {
+        event.preventDefault(); // Formun otomatik gönderilmesini engelle
 
-// Yeni Cari Hesap Formu Gönderme
-function submitCariHesapForm(event) {
-  event.preventDefault(); // Formun otomatik gönderilmesini engelle
+        const form = event.target;
+        const formData = new FormData(form);
+        const data = {};
 
-  const form = event.target;
-  const formData = new FormData(form);
-  const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
 
-  formData.forEach((value, key) => {
-    data[key] = value;
-  });
-
-  google.script.run
-    .withSuccessHandler(function (result) {
-      if (result.success) {
-        alert(result.message);
-        form.reset(); // Formu temizle
-        loadPage('carihesap'); // Sayfayı yenile
-      } else {
-        alert(result.message);
-      }
-    })
-    .withFailureHandler(function (error) {
-      alert('Hata: ' + error.message);
-    })
-    .CariHesap.add(data);
-}
+        google.script.run
+            .withSuccessHandler(function (result) {
+                if (result.success) {
+                    alert(result.message);
+                    form.reset(); // Formu temizle
+                    loadPage('carihesap'); // Sayfayı yenile
+                } else {
+                    alert(result.message);
+                }
+            })
+            .withFailureHandler(function (error) {
+                alert('Hata: ' + error.message);
+            })
+            .CariHesap.add(data);
+    }
 </script>
