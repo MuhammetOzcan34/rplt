@@ -12,22 +12,16 @@ body {
   border: none;
   box-shadow: 0 2px 4px rgba(0,0,0,.05);
   margin-bottom: 1rem;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
 }
 
 .form-control:focus {
   box-shadow: none;
   border-color: #0d6efd;
-}
-
-/* Tablo stilleri */
-.table {
-  background: white;
-  border-radius: .25rem;
-}
-
-.table th {
-  border-top: none;
-  background: #f8f9fa;
 }
 
 /* Buton stilleri */
@@ -39,35 +33,15 @@ body {
   font-size: .875rem;
 }
 
-/* Form stilleri */
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-label {
+/* Ana sayfa butonları */
+.card-title {
+  font-size: 1.25rem;
   font-weight: 500;
-  margin-bottom: .5rem;
 }
 
-/* Yazdırma stilleri */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-  
-  .print-only {
-    display: block !important;
-  }
-  
-  body {
-    padding: 0;
-    margin: 0;
-  }
-  
-  .container-fluid {
-    width: 100%;
-    padding: 0;
-  }
+.card-text {
+  font-size: 0.9rem;
+  color: #666;
 }
 
 /* Responsive düzenlemeler */
