@@ -1,7 +1,10 @@
 class CariHesap {
-  static getList(search = '') {
+  static getList(search = '', pageNumber = 1) {
     try {
       let data = Database.getAll('CariHesaplar');
+      const ITEMS_PER_PAGE = 25;
+      const startIndex = (pageNumber - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
 
       if (search) {
         data = data.filter(row => 
@@ -10,7 +13,7 @@ class CariHesap {
         );
       }
 
-      const mappedData = data.map(row => ({
+      const mappedData = data.slice(startIndex, endIndex).map(row => ({
         id: row[0],
         firmaAdi: row[1],
         subeBolge: row[2],
@@ -22,8 +25,14 @@ class CariHesap {
         projeSayisi: row[8] || 0
       }));
 
-      return mappedData;
+      return {
+        data: mappedData,
+        totalItems: data.length,
+        currentPage: pageNumber,
+        itemsPerPage: ITEMS_PER_PAGE
+      };
     } catch(e) {
+      Logger.log('CariHesap.getList hatası: ' + e.toString());
       throw e;
     }
   }
@@ -86,7 +95,7 @@ class CariHesap {
       ];
 
       Database.update('CariHesaplar', row.rowIndex, updatedRow);
-      return true;
+      return { success: true, message: 'Cari hesap başarıyla güncellendi' };
     } catch(e) {
       throw e;
     }
@@ -100,7 +109,7 @@ class CariHesap {
       }
 
       Database.delete('CariHesaplar', row.rowIndex);
-      return true;
+      return { success: true, message: 'Cari hesap başarıyla silindi' };
     } catch(e) {
       throw e;
     }
