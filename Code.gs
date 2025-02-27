@@ -7,6 +7,7 @@ function doGet(e) {
       .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
+// HTML dosyalarını dahil etmek için kullanılır
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
@@ -14,8 +15,12 @@ function include(filename) {
 // Ana sayfa yükleme
 function loadPage(page) {
   try {
+    if (!page) {
+      throw new Error("Sayfa parametresi geçersiz veya boş.");
+    }
+
     Logger.log('Yüklenen sayfa: ' + page);
-    const template = HtmlService.createTemplateFromFile('templates/' + page + '.html');
+    const template = HtmlService.createTemplateFromFile('templates/' + page);
     const html = template.evaluate().getContent();
     Logger.log('Sayfa içeriği yüklendi');
     return html;
@@ -26,63 +31,55 @@ function loadPage(page) {
 }
 
 // Global ayarlar
-const SHEET_ID = '10j6_p6gyTQfEW0OiQPJGljg7mg1XArwQvoOIviVCo34'; // Buraya Google Sheets ID'sini yazın
-const DRIVE_FOLDER = '1CWD2kEdiNCDIt8cyU_8HUkw78JUIzHgn'; // Buraya Google Drive klasör ID'sini yazın
+const SHEET_ID = '10j6_p6gyTQfEW0OiQPJGljg7mg1XArwQvoOIviVCo34'; // Google Sheets ID'si
+const DRIVE_FOLDER = '1CWD2kEdiNCDIt8cyU_8HUkw78JUIzHgn'; // Google Drive klasör ID'si
 
 // Sayfa yönlendirmeleri
-function handlePageLoad(page, action = '', data = null) {
+function handlePageLoad(page, search = "", pageNumber = 1) {
   try {
-    Logger.log('handlePageLoad çağrıldı: ' + page + ', action: ' + action);
-
-    if (action === 'add') {
-      switch(page) {
-        case 'carihesap':
-          return CariHesap.add(data);
-        case 'teklif':
-          return Teklif.add(data);
-        case 'proje':
-          return Proje.add(data);
-        case 'gorev':
-          return Gorev.add(data);
-        default:
-          throw new Error('Geçersiz işlem');
-      }
+    if (!page) {
+      throw new Error("Sayfa parametresi geçersiz veya boş.");
     }
 
+    Logger.log('handlePageLoad çağrıldı: ' + page + ', search: ' + search);
+
     // Sayfa yükleme işlemi
-    const html = loadPage(page + '.html');
+    const html = loadPage(page);
     Logger.log('Sayfa HTML içeriği yüklendi');
 
     // Verileri yükle
     let pageData;
-    switch(page) {
+    switch (page) {
       case 'carihesap':
-        pageData = CariHesap.getList();
+        pageData = CariHesap.getList(search, pageNumber);
         break;
-      case 'teklif': 
-        pageData = Teklif.getList();
+      case 'teklif':
+        pageData = Teklif.getList(search, pageNumber);
         break;
       case 'proje':
-        pageData = Proje.getList();
+        pageData = Proje.getList(search, pageNumber);
         break;
       case 'gorev':
-        pageData = Gorev.getList();
+        pageData = Gorev.getList(search, pageNumber);
         break;
       case 'rapor':
-        pageData = Rapor.getList();
+        pageData = Rapor.getList(search);
         break;
+      case 'dashboard':
+        // Dashboard için özel veri yükleme gerekmiyor
+        return { html: html, data: null };
       default:
-        pageData = CariHesap.getList();
+        throw new Error("Geçersiz sayfa: " + page);
     }
     Logger.log('Sayfa verileri yüklendi');
 
     return {
       html: html,
-      data: pageData
+      data: pageData.data // Sadece veri kısmını döndür
     };
-  } catch(e) {
+  } catch (e) {
     Logger.log('handlePageLoad hatası: ' + e.toString());
-    throw e;
+    throw e; // Hata mesajını yeniden fırlat
   }
 }
 
