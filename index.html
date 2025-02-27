@@ -1,88 +1,192 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top" />
-    <meta charset="UTF-8" />
-    <title>İş Yönetim Sistemi</title>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <title>İş Yönetim Sistemi</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  
+  <!-- Özel Stil Dosyası -->
+  <?!= include('styles'); ?>
+</head>
+<body>
 
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+<!-- Header Bölümü -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#" onclick="loadPage('dashboard')">İş Yönetim Sistemi</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="loadPage('carihesap')">Cari Hesaplar</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="loadPage('teklif')">Teklifler</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="loadPage('proje')">Projeler</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="loadPage('gorev')">Görevler</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="loadPage('rapor')">Raporlar</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
 
-    <!-- Font Awesome -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-      rel="stylesheet"
-    />
+<!-- İçerik Bölümü -->
+<div id="content" class="container-fluid mt-4">
+  <!-- Dashboard (Ana Sayfa) -->
+  <div id="dashboard">
+    <div class="text-center mt-5">
+      <h1 class="display-4">İş Yönetim Sistemi</h1>
+      <p class="lead">İş süreçlerinizi kolayca yönetin.</p>
+    </div>
 
-    <?!= include('styles'); ?>
-  </head>
-  <body>
-    <div class="container-fluid">
-      <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">İş Yönetim Sistemi</a>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" href="#" data-page="carihesap"
-                  >Cari Hesaplar</a
-                >
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#" data-page="teklif">Teklifler</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#" data-page="proje">Projeler</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#" data-page="gorev">Görevler</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#" data-page="rapor">Raporlar</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-
-      <!-- Arama çubuğu -->
-      <div class="row mb-4">
-        <div class="col">
-          <div class="input-group">
-            <span class="input-group-text">
-              <i class="fas fa-search"></i>
-            </span>
-            <input
-              type="text"
-              class="form-control"
-              id="searchInput"
-              placeholder="Ara..."
-            />
+    <!-- Sayfa Butonları -->
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-3 mb-4">
+        <div class="card text-center h-100 shadow">
+          <div class="card-body">
+            <i class="fas fa-building fa-3x mb-3 text-primary"></i>
+            <h5 class="card-title">Cari Hesaplar</h5>
+            <p class="card-text">Cari hesaplarınızı yönetin.</p>
+            <button class="btn btn-primary" onclick="loadPage('carihesap')">Sayfaya Git</button>
           </div>
         </div>
       </div>
-
-      <!-- Ana içerik -->
-      <div id="content"></div>
+      <div class="col-md-3 mb-4">
+        <div class="card text-center h-100 shadow">
+          <div class="card-body">
+            <i class="fas fa-file-contract fa-3x mb-3 text-success"></i>
+            <h5 class="card-title">Teklifler</h5>
+            <p class="card-text">Tekliflerinizi yönetin.</p>
+            <button class="btn btn-success" onclick="loadPage('teklif')">Sayfaya Git</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="card text-center h-100 shadow">
+          <div class="card-body">
+            <i class="fas fa-project-diagram fa-3x mb-3 text-warning"></i>
+            <h5 class="card-title">Projeler</h5>
+            <p class="card-text">Projelerinizi yönetin.</p>
+            <button class="btn btn-warning" onclick="loadPage('proje')">Sayfaya Git</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="card text-center h-100 shadow">
+          <div class="card-body">
+            <i class="fas fa-tasks fa-3x mb-3 text-info"></i>
+            <h5 class="card-title">Görevler</h5>
+            <p class="card-text">Görevlerinizi yönetin.</p>
+            <button class="btn btn-info" onclick="loadPage('gorev')">Sayfaya Git</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="card text-center h-100 shadow">
+          <div class="card-body">
+            <i class="fas fa-chart-bar fa-3x mb-3 text-danger"></i>
+            <h5 class="card-title">Raporlar</h5>
+            <p class="card-text">Raporlarınızı görüntüleyin.</p>
+            <button class="btn btn-danger" onclick="loadPage('rapor')">Sayfaya Git</button>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+</div>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <?!= include('scripts'); ?>
-  </body>
+<!-- JavaScript Fonksiyonları -->
+<script>
+// Sayfa yükleme fonksiyonu
+function loadPage(page) {
+  if (!page) {
+    console.error("Sayfa parametresi geçersiz veya boş.");
+    return;
+  }
+
+  console.log("Sayfa yükleniyor:", page);
+  $("#content").html('<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i></div>');
+
+  google.script.run
+    .withSuccessHandler(function (result) {
+      console.log("Sayfa içeriği ve veriler alındı");
+      if (result && result.html) {
+        // Önce HTML içeriğini yükle
+        $("#content").html(result.html);
+        $(".nav-link").removeClass("active");
+        $(`[onclick="loadPage('${page}')"]`).addClass("active");
+
+        // Sonra verileri tabloya yükle
+        if (result.data) {
+          switch (page) {
+            case "carihesap":
+              loadCariHesapList(result.data);
+              break;
+            case "teklif":
+              loadTeklifList(result.data);
+              break;
+            case "proje":
+              loadProjeList(result.data);
+              break;
+            case "gorev":
+              loadGorevList(result.data);
+              break;
+            case "rapor":
+              loadRaporCharts(result.data);
+              break;
+            default:
+              console.error("Geçersiz sayfa:", page);
+          }
+        }
+      } else {
+        console.error("Sayfa içeriği boş");
+        $("#content").html('<div class="alert alert-danger">Sayfa içeriği yüklenemedi</div>');
+      }
+    })
+    .withFailureHandler(function (error) {
+      console.error("Sayfa yükleme hatası:", error);
+      $("#content").html(`<div class="alert alert-danger">Hata: ${error.message}</div>`);
+    })
+    .handlePageLoad(page);
+}
+
+// Header'daki bağlantılar için event.preventDefault() ekleme
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("header a").forEach(link => {
+    link.addEventListener("click", function (event) {
+      event.preventDefault(); // Sayfanın yenilenmesini önler
+      let targetPage = this.getAttribute("href"); // Hedef sayfayı al
+      loadPage(targetPage); // Sayfayı yükleme fonksiyonunu çağır
+    });
+  });
+});
+
+// Sayfa yüklendiğinde Dashboard'u göster
+$(document).ready(function() {
+  loadPage('dashboard');
+});
+</script>
+
+</body>
 </html>
