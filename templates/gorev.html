@@ -51,7 +51,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form id="gorevForm">
+        <form id="gorevForm" onsubmit="submitForm(this, 'Gorev.add'); return false;">
           <div class="form-group mb-3">
             <label class="form-label">Durum</label>
             <select class="form-select" name="durum" required>
@@ -87,7 +87,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-        <button type="button" class="btn btn-primary" onclick="submitForm('gorevForm', 'addGorev')">Kaydet</button>
+        <button type="submit" class="btn btn-primary" form="gorevForm">Kaydet</button>
       </div>
     </div>
   </div>
