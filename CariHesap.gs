@@ -59,54 +59,18 @@ class CariHesap {
         0  // Proje sayısı
       ];
       Logger.log('Oluşturulan satır:', row);
-      if (Database.insert('CariHesaplar', row)) {
-        return {
-          success: true,
-          message: 'Cari hesap başarıyla eklendi',
-          id: id
-        };
-      } else {
-        throw new Error('Veri eklenemedi');
+      const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('CariHesaplar');
+      if (!sheet) {
+        throw new Error("CariHesaplar sayfası bulunamadı!");
       }
+      sheet.appendRow(row);
+      return {
+        success: true,
+        message: 'Cari hesap başarıyla eklendi',
+        id: id
+      };
     } catch (e) {
       Logger.log('Hata:', e.toString());
-      throw e;
-    }
-  }
-
-  static update(id, data) {
-    try {
-      const row = Database.findById('CariHesaplar', id);
-      if (!row) {
-        throw new Error('Cari hesap bulunamadı');
-      }
-      const updatedRow = [
-        id,
-        data.firmaAdi,
-        data.subeBolge || '',
-        data.firmaTuru,
-        data.yetkiliKisi || '',
-        data.telefon || '',
-        data.email || '',
-        row[7],
-        row[8]
-      ];
-      Database.update('CariHesaplar', row.rowIndex, updatedRow);
-      return { success: true, message: 'Cari hesap başarıyla güncellendi' };
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  static delete(id) {
-    try {
-      const row = Database.findById('CariHesaplar', id);
-      if (!row) {
-        throw new Error('Cari hesap bulunamadı');
-      }
-      Database.delete('CariHesaplar', row.rowIndex);
-      return { success: true, message: 'Cari hesap başarıyla silindi' };
-    } catch (e) {
       throw e;
     }
   }
