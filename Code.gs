@@ -12,44 +12,20 @@ function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
 
-// Ana sayfa yükleme
-function loadPage(page) {
-  try {
-    if (!page) {
-      throw new Error("Sayfa parametresi geçersiz veya boş.");
-    }
-
-    Logger.log('Yüklenen sayfa: ' + page);
-    const template = HtmlService.createTemplateFromFile('templates/' + page);
-    const html = template.evaluate().getContent();
-    Logger.log('Sayfa içeriği yüklendi');
-    return html;
-  } catch(e) {
-    Logger.log('Sayfa yükleme hatası: ' + e.toString());
-    throw e;
-  }
-}
-
-// Global ayarlar
-const SHEET_ID = '10j6_p6gyTQfEW0OiQPJGljg7mg1XArwQvoOIviVCo34'; // Google Sheets ID'si
-const DRIVE_FOLDER = '1CWD2kEdiNCDIt8cyU_8HUkw78JUIzHgn'; // Google Drive klasör ID'si
-
-// Sayfa yönlendirmeleri
+// Sayfa yönlendirmesi
 function handlePageLoad(page, search = "", pageNumber = 1) {
   try {
     if (!page) {
       throw new Error("Sayfa parametresi geçersiz veya boş.");
     }
-
     Logger.log('handlePageLoad çağrıldı: ' + page + ', search: ' + search);
-
-    // Sayfa yükleme işlemi
-    const html = loadPage(page);
-    Logger.log('Sayfa HTML içeriği yüklendi');
-
-    // Verileri yükle
+    const html = HtmlService.createTemplateFromFile('templates/' + page)
+                .evaluate().getContent();
     let pageData;
     switch (page) {
+      case 'dashboard':
+        pageData = null;
+        break;
       case 'carihesap':
         pageData = CariHesap.getList(search, pageNumber);
         break;
@@ -63,35 +39,44 @@ function handlePageLoad(page, search = "", pageNumber = 1) {
         pageData = Gorev.getList(search, pageNumber);
         break;
       case 'rapor':
-        pageData = Rapor.getList(search);
+        pageData = Rapor.getDashboardData();
         break;
-      case 'dashboard':
-        // Dashboard için özel veri yükleme gerekmiyor
-        return { html: html, data: null };
       default:
         throw new Error("Geçersiz sayfa: " + page);
     }
-    Logger.log('Sayfa verileri yüklendi');
-
     return {
       html: html,
-      data: pageData // Sadece veri kısmını döndür
+      data: pageData
     };
   } catch (e) {
     Logger.log('handlePageLoad hatası: ' + e.toString());
-    throw e; // Hata mesajını yeniden fırlat
+    throw e;
   }
 }
 
-// Test fonksiyonu - Sheets bağlantısını kontrol et
+// Global ayarlar
+const SHEET_ID = '10j6_p6gyTQfEW0OiQPJGljg7mg1XArwQvoOIviVCo34'; // Google Sheets ID'nizi girin
+const DRIVE_FOLDER = '1CWD2kEdiNCDIt8cyU_8HUkw78JUIzHgn'; // Google Drive klasör ID'nizi girin
+
+// Cari Hesap işlemlerini dışarıya açan global fonksiyonlar
+function addCariHesap(data) {
+  return CariHesap.add(data);
+}
+
+function updateCariHesap(data) {
+  return CariHesap.update(data.id, data);
+}
+
+function deleteCariHesap(id) {
+  return CariHesap.delete(id);
+}
+
 function testSheetsConnection() {
   try {
     Logger.log('Sheets bağlantı testi başladı');
     Logger.log('SHEET_ID: ' + SHEET_ID);
-
     const ss = SpreadsheetApp.openById(SHEET_ID);
     Logger.log('Spreadsheet başarıyla açıldı');
-
     const sheet = ss.getSheetByName('CariHesaplar');
     if (sheet) {
       Logger.log('CariHesaplar sayfası mevcut');
