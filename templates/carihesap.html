@@ -1,191 +1,207 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cari Hesaplar</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
-    <style>
-        .search-container {
-            display: flex;
-            align-items: center;
-            position: relative;
-        }
-        .search-icon {
-            cursor: pointer;
-            font-size: 20px;
-            position: absolute;
-            left: 10px;
-        }
-        #searchBox {
-            width: 40px;
-            padding: 5px 10px 5px 30px;
-            transition: width 0.3s ease-in-out;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            outline: none;
-        }
-        #searchBox.expanded {
-            width: 200px;
-        }
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .action-buttons button {
-            margin-right: 5px;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="header-container">
-            <h1>Cari Hesaplar</h1>
-            <div class="search-container">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="searchBox" placeholder="Cari Hesap Ara...">
-            </div>
-            <button id="addAccountBtn">Cari Hesap Ekle</button>
-        </div>
-    </header>
-    
-    <main>
-        <table id="accountsTable">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Firma Adı</th>
-                    <th>Şube/Bölge</th>
-                    <th>Firma Türü</th>
-                    <th>Yetkili Kişi</th>
-                    <th>Görevi</th>
-                    <th>Telefon</th>
-                    <th>E-Posta</th>
-                    <th>Görevler</th>
-                    <th>Projeler</th>
-                    <th>İşlemler</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Veriler dinamik olarak yüklenecek -->
-            </tbody>
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Cari Hesaplar</h3>
+    <input type="text" id="searchInput" class="form-control w-25" placeholder="Arama..." oninput="searchCariHesaplar()">
+  </div>
+
+  <!-- Tab Menü -->
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="cariHesapListesi-tab" data-bs-toggle="tab" data-bs-target="#cariHesapListesi" type="button" role="tab" aria-controls="cariHesapListesi" aria-selected="true">
+        Cari Hesap Listesi
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="yeniCariHesap-tab" data-bs-toggle="tab" data-bs-target="#yeniCariHesap" type="button" role="tab" aria-controls="yeniCariHesap" aria-selected="false">
+        Yeni Cari Hesap Ekle
+      </button>
+    </li>
+  </ul>
+
+  <!-- Tab İçerikleri -->
+  <div class="tab-content" id="myTabContent">
+    <!-- Cari Hesap Listesi -->
+    <div class="tab-pane fade show active" id="cariHesapListesi" role="tabpanel" aria-labelledby="cariHesapListesi-tab">
+      <div class="table-responsive mt-3">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Firma Adı</th>
+              <th>Şube/Bölge</th>
+              <th>Firma Türü</th>
+              <th>Yetkili Kişi</th>
+              <th>Telefon</th>
+              <th>E-posta</th>
+              <th>Görev Sayısı</th>
+              <th>Proje Sayısı</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody id="cariHesapList"></tbody>
         </table>
-    </main>
-    
-    <script>
-        document.getElementById('searchBox').addEventListener('input', function() {
-            let filter = this.value.toLowerCase();
-            let rows = document.querySelectorAll('#accountsTable tbody tr');
-            rows.forEach(row => {
-                let cells = row.querySelectorAll('td');
-                let match = false;
-                cells.forEach(cell => {
-                    if (cell.textContent.toLowerCase().includes(filter)) {
-                        match = true;
-                    }
-                });
-                row.style.display = match ? '' : 'none';
-            });
-        });
+      </div>
 
-        document.querySelector('.search-icon').addEventListener('click', function() {
-            let searchBox = document.getElementById('searchBox');
-            searchBox.classList.toggle('expanded');
-            if (searchBox.classList.contains('expanded')) {
-                searchBox.focus();
-            }
-        });
-
-        document.getElementById('addAccountBtn').addEventListener('click', function() {
-            let form = document.getElementById('accountForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        });
-
-        function loadAccounts() {
-            let tableBody = document.querySelector('#accountsTable tbody');
-            tableBody.innerHTML = '';
-            google.script.run
-                .withSuccessHandler(function(accounts) {
-                    accounts.forEach(account => {
-                        let row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${account.id}</td>
-                            <td>${account.firmaAdi}</td>
-                            <td>${account.subeBolge}</td>
-                            <td>${account.firmaTuru}</td>
-                            <td>${account.yetkili}</td>
-                            <td>${account.gorevi}</td>
-                            <td>${account.telefon}</td>
-                            <td>${account.email}</td>
-                            <td>${account.gorevler}</td>
-                            <td>${account.projeler}</td>
-                            <td class="action-buttons">
-                                <button class="btn btn-sm btn-icon btn-warning" onclick="editAccount('${account.id}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-icon btn-danger" onclick="deleteAccount('${account.id}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                })
-                .loadCariHesapList();
-        }
-
-        function editAccount(id) {
-            alert('Düzenleme ekranı: ' + id);
-        }
-
-        function deleteAccount(id) {
-            if (confirm('Bu kaydı silmek istediğinize emin misiniz?')) {
-                google.script.run
-                    .withSuccessHandler(function(response) {
-                        if (response.success) {
-                            alert("Cari hesap başarıyla silindi.");
-                            loadAccounts();
-                        } else {
-                            alert("Silme işlemi başarısız!");
-                        }
-                    })
-                    .deleteCariHesap(id);
-            }
-        }
-
-        window.onload = loadAccounts;
-    </script>
-
-    <div id="accountForm" style="display: none;">
-        <h2>Yeni Cari Hesap Ekle</h2>
-        <form onsubmit="submitCariHesapForm(event)">
-            <label for="firmaAdi">Firma Adı:</label>
-            <input type="text" id="firmaAdi" name="firmaAdi" required>
-            
-            <label for="subeBolge">Şube/Bölge:</label>
-            <input type="text" id="subeBolge" name="subeBolge" required>
-            
-            <label>Firma Türü:</label>
-            <input type="checkbox" id="alici" name="firmaTuru" value="Alıcı"> Alıcı
-            <input type="checkbox" id="satici" name="firmaTuru" value="Satıcı"> Satıcı
-            
-            <label for="yetkiliKisi">Yetkili Kişi:</label>
-            <input type="text" id="yetkiliKisi" name="yetkiliKisi" required>
-            
-            <label for="gorevi">Görevi:</label>
-            <input type="text" id="gorevi" name="gorevi" required>
-            
-            <label for="telefon">Telefon:</label>
-            <input type="tel" id="telefon" name="telefon" required>
-            
-            <label for="email">E-Posta:</label>
-            <input type="email" id="email" name="email" required>
-            
-            <button type="submit">Kaydet</button>
-        </form>
+      <!-- Sayfalama -->
+      <nav>
+        <ul class="pagination justify-content-center">
+          <li class="page-item"><a class="page-link" href="#" onclick="changePage(1)">1</a></li>
+          <li class="page-item"><a class="page-link" href="#" onclick="changePage(2)">2</a></li>
+          <li class="page-item"><a class="page-link" href="#" onclick="showAllGorevler()">Tümü</a></li>
+        </ul>
+      </nav>
     </div>
-</body>
-</html>
+
+    <!-- Yeni Cari Hesap Ekle -->
+    <div class="tab-pane fade" id="yeniCariHesap" role="tabpanel" aria-labelledby="yeniCariHesap-tab">
+      <form id="cariHesapForm" class="mt-3" onsubmit="submitCariHesapForm(event)">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Firma Adı</label>
+              <input type="text" class="form-control" name="firmaAdi" required>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Şube/Bölge</label>
+              <input type="text" class="form-control" name="subeBolge">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Firma Türü</label>
+              <select class="form-select" name="firmaTuru" required>
+                <option value="Alıcı">Alıcı</option>
+                <option value="Satıcı">Satıcı</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Yetkili Kişi</label>
+              <input type="text" class="form-control" name="yetkiliKisi">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Telefon</label>
+              <input type="tel" class="form-control" name="telefon">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">E-posta</label>
+              <input type="email" class="form-control" name="email">
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript Fonksiyonları -->
+<script>
+  let currentPage = 1;
+
+  // Cari Hesap listesini yükle
+  function loadCariHesapList(data) {
+    const tbody = $('#cariHesapList');
+    tbody.empty();
+
+    // data parametresinin bir dizi olup olmadığını kontrol et
+    if (!Array.isArray(data)) {
+      console.error('Hata: data bir dizi değil!', data);
+      return;
+    }
+
+    data.forEach(function(item) {
+      tbody.append(`
+        <tr data-id="${item.id}">
+          <td class="firmaAdi">${item.firmaAdi}</td>
+          <td class="subeBolge">${item.subeBolge || '-'}</td>
+          <td class="firmaTuru">${item.firmaTuru}</td>
+          <td class="yetkiliKisi">${item.yetkiliKisi || '-'}</td>
+          <td class="telefon">${item.telefon || '-'}</td>
+          <td class="email">${item.email || '-'}</td>
+          <td>${item.gorevSayisi || 0}</td>
+          <td>${item.projeSayisi || 0}</td>
+          <td>
+            <button class="btn btn-sm btn-icon btn-warning" onclick="editCariHesap('${item.id}')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-icon btn-danger" onclick="deleteCariHesap('${item.id}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `);
+    });
+  }
+
+  // Dinamik Arama
+  function searchCariHesaplar() {
+    const searchTerm = $('#searchInput').val();
+    loadPage('carihesap', searchTerm, currentPage);
+  }
+
+  // Sayfa değiştirme
+  function changePage(page) {
+    currentPage = page;
+    loadPage('carihesap', $('#searchInput').val(), currentPage);
+  }
+
+  // Tümünü göster
+  function showAllGorevler() {
+    currentPage = 1;
+    loadPage('carihesap', $('#searchInput').val(), 0); // 0, tümünü göster anlamına gelir
+  }
+
+  // Cari Hesap Silme
+  function deleteCariHesap(id) {
+    if (!confirm("Bu cari hesabı silmek istediğinize emin misiniz?")) return;
+    google.script.run
+      .withSuccessHandler(function(response) {
+        if (response.success) {
+          alert("Cari hesap başarıyla silindi.");
+          loadPage('carihesap');
+        } else {
+          alert("Silme işlemi başarısız!");
+        }
+      })
+      .deleteCariHesap(id);
+  }
+
+  // Cari Hesap Düzenleme
+  function editCariHesap(id) {
+    const row = document.querySelector(`tr[data-id='${id}']`);
+    if (!row) {
+      alert("Kayıt bulunamadı!");
+      return;
+    }
+    const updatedData = {
+      id: id,
+      firmaAdi: row.querySelector(".firmaAdi") ? row.querySelector(".firmaAdi").innerText : "",
+      subeBolge: row.querySelector(".subeBolge") ? row.querySelector(".subeBolge").innerText : "",
+      firmaTuru: row.querySelector(".firmaTuru") ? row.querySelector(".firmaTuru").innerText : "",
+      yetkiliKisi: row.querySelector(".yetkiliKisi") ? row.querySelector(".yetkiliKisi").innerText : "",
+      telefon: row.querySelector(".telefon") ? row.querySelector(".telefon").innerText : "",
+      email: row.querySelector(".email") ? row.querySelector(".email").innerText : ""
+    };
+    google.script.run
+      .withSuccessHandler(function(response) {
+        if (response.success) {
+          alert("Cari hesap başarıyla güncellendi.");
+          loadPage('carihesap');
+        } else {
+          alert("Güncelleme başarısız!");
+        }
+      })
+      .updateCariHesap(updatedData);
+  }
+</script>
