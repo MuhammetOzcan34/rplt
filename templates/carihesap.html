@@ -111,38 +111,38 @@
 
   // Cari Hesap listesini yükle
   function loadCariHesapList(data) {
-  const tbody = $('#cariHesapList');
-  tbody.empty();
+    const tbody = $('#cariHesapList');
+    tbody.empty();
 
-  // data parametresinin bir dizi olup olmadığını kontrol et
-  if (!Array.isArray(data)) {
-    console.error('Hata: data bir dizi değil!', data);
-    return;
+    // data parametresinin bir dizi olup olmadığını kontrol et
+    if (!Array.isArray(data)) {
+      console.error('Hata: data bir dizi değil!', data);
+      return;
+    }
+
+    data.forEach(function(item) {
+      tbody.append(`
+        <tr data-id="${item.id}">
+          <td class="firmaAdi">${item.firmaAdi}</td>
+          <td class="subeBolge">${item.subeBolge || '-'}</td>
+          <td class="firmaTuru">${item.firmaTuru}</td>
+          <td class="yetkiliKisi">${item.yetkiliKisi || '-'}</td>
+          <td class="telefon">${item.telefon || '-'}</td>
+          <td class="email">${item.email || '-'}</td>
+          <td>${item.gorevSayisi || 0}</td>
+          <td>${item.projeSayisi || 0}</td>
+          <td>
+            <button class="btn btn-sm btn-icon btn-warning" onclick="editCariHesap('${item.id}')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-icon btn-danger" onclick="deleteCariHesap('${item.id}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `);
+    });
   }
-
-  data.forEach(function(item) {
-    tbody.append(`
-      <tr data-id="${item.id}">
-        <td class="firmaAdi">${item.firmaAdi}</td>
-        <td class="subeBolge">${item.subeBolge || '-'}</td>
-        <td class="firmaTuru">${item.firmaTuru}</td>
-        <td class="yetkiliKisi">${item.yetkiliKisi || '-'}</td>
-        <td class="telefon">${item.telefon || '-'}</td>
-        <td class="email">${item.email || '-'}</td>
-        <td>${item.gorevSayisi || 0}</td>
-        <td>${item.projeSayisi || 0}</td>
-        <td>
-          <button class="btn btn-sm btn-icon btn-warning" onclick="editCariHesap('${item.id}')">
-            <i class="fas fa-edit"></i>
-          </button>
-          <button class="btn btn-sm btn-icon btn-danger" onclick="deleteCariHesap('${item.id}')">
-            <i class="fas fa-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `);
-  });
-}
 
   // Dinamik Arama
   function searchCariHesaplar() {
