@@ -224,52 +224,79 @@
       }
 
       // Form işlemleri
-      function submitForm(form, handler) {
-        const formData = new FormData(form);
-        const data = {};
-        formData.forEach((value, key) => {
-          if (key.endsWith("[]")) {
-            const cleanKey = key.slice(0, -2);
-            if (!data[cleanKey]) {
-              data[cleanKey] = [];
-            }
-            data[cleanKey].push(value);
-          } else {
-            data[key] = value;
-          }
-        });
-        console.log("Gönderilen veri:", data);
-        google.script.run
-          .withSuccessHandler(function (result) {
-            if (result.success) {
-              alert(result.message);
-              form.reset();
-              loadPage("carihesap");
-            } else {
-              alert(result.message);
-            }
-          })
-          .withFailureHandler(function (error) {
-            alert("Hata: " + error.message);
-          })
-          [handler](data);
+function submitForm(form, handler) {
+  const formData = new FormData(form);
+  const data = {};
+  formData.forEach((value, key) => {
+    if (key.endsWith("[]")) {
+      const cleanKey = key.slice(0, -2);
+      if (!data[cleanKey]) {
+        data[cleanKey] = [];
       }
-
-      // Cari Hesap Düzenleme ve Silme Fonksiyonları
-      function deleteCariHesap(id) {
-        if (!confirm("Bu cari hesabı silmek istediğinize emin misiniz?")) return;
-        google.script.run
-          .withSuccessHandler(function (response) {
-            if (response) {
-              alert("Cari hesap başarıyla silindi.");
-              loadPage("carihesap");
-            } else {
-              alert("Silme işlemi başarısız!");
-            }
-          })
-          .deleteCariHesap(id);
+      data[cleanKey].push(value);
+    } else {
+      data[key] = value;
+    }
+  });
+  console.log("Gönderilen veri:", data);
+  google.script.run
+    .withSuccessHandler(function (result) {
+      if (result.success) {
+        alert(result.message);
+        form.reset();
+        loadPage("carihesap");
+      } else {
+        alert(result.message);
       }
+    })
+    .withFailureHandler(function (error) {
+      alert("Hata: " + error.message);
+    })
+    [handler](data);
+}
 
+// Cari Hesap Düzenleme ve Silme Fonksiyonları
+function loadCariHesapList(data) {
+  if (!Array.isArray(data)) {
+    console.error('Hata: data bir dizi değil!', data);
+    return;
+  }
+  const tableBody = document.getElementById('cariHesapList');
+  tableBody.innerHTML = '';
+  data.forEach(item => {
+    const row = document.createElement('tr');
+    row.dataset.id = item.id;
+    row.innerHTML = `
+      <td class="firmaAdi">${item.firmaAdi}</td>
+      <td class="subeBolge">${item.subeBolge}</td>
+      <td class="firmaTuru">${item.firmaTuru}</td>
+      <td class="yetkiliKisi">${item.yetkiliKisi}</td>
+      <td class="telefon">${item.telefon}</td>
+      <td class="email">${item.email}</td>
+      <td class="gorevSayisi">${item.gorevSayisi}</td>
+      <td class="projeSayisi">${item.projeSayisi}</td>
+      <td>
+        <button onclick="editCariHesap('${item.id}')">Düzenle</button>
+        <button onclick="deleteCariHesap('${item.id}')">Sil</button>
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
+
+function deleteCariHesap(id) {
+  if (!confirm("Bu cari hesabı silmek istediğinize emin misiniz?")) return;
+  google.script.run
+    .withSuccessHandler(function (response) {
+      if (response) {
+        alert("Cari hesap başarıyla silindi.");
+        loadPage("carihesap");
+      } else {
+        alert("Silme işlemi başarısız!");
+      }
+    })
+    .deleteCariHesap(id);
+}
       function editCariHesap(id) {
         const row = document.querySelector(`tr[data-id='${id}']`);
         if (!row) {
