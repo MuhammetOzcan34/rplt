@@ -15,10 +15,12 @@ function include(filename) {
 // Sayfa yönlendirmesi
 function handlePageLoad(page, search = "", pageNumber = 1) {
   try {
-    if (!page) throw new Error("Sayfa parametresi geçersiz veya boş.");
-
+    if (!page) {
+      throw new Error("Sayfa parametresi geçersiz veya boş.");
+    }
     Logger.log('handlePageLoad çağrıldı: ' + page + ', search: ' + search);
-    const html = HtmlService.createTemplateFromFile('templates/' + page).evaluate().getContent();
+    const html = HtmlService.createTemplateFromFile('templates/' + page)
+                .evaluate().getContent();
     let pageData;
     switch (page) {
       case 'dashboard':
@@ -44,10 +46,10 @@ function handlePageLoad(page, search = "", pageNumber = 1) {
     }
     return {
       html: html,
-      data: pageData.data, // Ensure data is correctly returned
-      pageSize: pageData.pageSize,
-      totalItems: pageData.totalItems,
-      pageNumber: pageData.pageNumber
+      data: pageData ? pageData.data : null,
+      pageSize: pageData ? pageData.pageSize : null,
+      totalItems: pageData ? pageData.totalItems : null,
+      pageNumber: pageData ? pageData.pageNumber : null
     };
   } catch (e) {
     Logger.log('handlePageLoad hatası: ' + e.toString());
