@@ -46,10 +46,7 @@ function handlePageLoad(page, search = "", pageNumber = 1) {
     }
     return {
       html: html,
-      data: pageData ? pageData.data : null,
-      pageSize: pageData ? pageData.pageSize : null,
-      totalItems: pageData ? pageData.totalItems : null,
-      pageNumber: pageData ? pageData.pageNumber : null
+      data: pageData
     };
   } catch (e) {
     Logger.log('handlePageLoad hatası: ' + e.toString());
