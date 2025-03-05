@@ -111,8 +111,8 @@
 
         <!-- Ürün/Hizmet Bilgileri -->
         <h5>Ürün/Hizmet Bilgileri</h5>
-        <div class="form-group">
-          <label>
+        <div class="form-group d-flex justify-content-end">
+          <label class="mr-3">
             <input type="checkbox" id="iskontoCheckbox">
             <span>İskonto Ekle</span>
           </label>
@@ -133,7 +133,7 @@
               <th>Tutar</th>
               <th class="iskonto-container hidden">İskonto Tutarı</th>
               <th class="kdvOrani-container hidden">KDV Oranı</th>
-              <th class="kdvliTutar-container hidden">KDV’li Tutar</th>
+              <th>NET TUTAR</th>
             </tr>
           </thead>
           <tbody id="productTableBody">
@@ -167,7 +167,7 @@
               <td><input type="text" class="tutar" readonly></td>
               <td class="iskonto-container hidden"><input type="text" class="iskontoTutar"></td>
               <td class="kdvOrani-container hidden"><input type="text" class="kdvOrani" placeholder="%"></td>
-              <td class="kdvliTutar-container hidden"><input type="text" class="kdvliTutar" readonly></td>
+              <td class="netTutar-container"><input type="text" class="netTutar" readonly></td>
             </tr>
           </tbody>
         </table>
@@ -310,7 +310,7 @@
         <td><input type="text" class="tutar" readonly></td>
         <td class="iskonto-container hidden"><input type="text" class="iskontoTutar"></td>
         <td class="kdvOrani-container hidden"><input type="text" class="kdvOrani" placeholder="%"></td>
-        <td class="kdvliTutar-container hidden"><input type="text" class="kdvliTutar" readonly></td>
+        <td class="netTutar-container"><input type="text" class="netTutar" readonly></td>
       </tr>
     `;
     $('#productTableBody').append(row);
@@ -330,6 +330,22 @@
     const kdvliTutar = netTutar + (netTutar * (kdvOrani / 100));
 
     row.find('.tutar').val(`${tutar.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${paraBirimi}`);
-    row.find('.kdvliTutar').val(`${kdvliTutar.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${paraBirimi}`);
+    row.find('.netTutar').val(`${kdvliTutar.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${paraBirimi}`);
+  });
+
+  $('#iskontoCheckbox').change(function() {
+    if ($(this).is(':checked')) {
+      $('.iskonto-container').removeClass('hidden');
+    } else {
+      $('.iskonto-container').addClass('hidden');
+    }
+  });
+
+  $('#kdvCheckbox').change(function() {
+    if ($(this).is(':checked')) {
+      $('.kdvOrani-container').removeClass('hidden');
+    } else {
+      $('.kdvOrani-container').addClass('hidden');
+    }
   });
 </script>
