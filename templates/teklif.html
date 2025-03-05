@@ -52,7 +52,131 @@
     <!-- Yeni Teklif Ekle -->
     <div class="tab-pane fade" id="yeniTeklif" role="tabpanel" aria-labelledby="yeniTeklif-tab">
       <form id="teklifForm" class="mt-3" onsubmit="submitTeklifForm(event)">
-        <!-- Form alanları buraya eklenecek -->
+        <!-- Genel Bilgiler -->
+        <h5>Genel Bilgiler</h5>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="teklifTuru">Teklif Türü</label>
+              <select id="teklifTuru" class="form-control" required>
+                <option value="Verilen">Verilen Teklif</option>
+                <option value="Alınan">Alınan Teklif</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="firmaAdi">Firma Adı</label>
+              <select id="firmaAdi" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label for="teklifKonusu">Teklif Konusu</label>
+              <input type="text" id="teklifKonusu" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="yetkiliKisi">Yetkili Kişi</label>
+              <select id="yetkiliKisi" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label for="teklifDurumu">Teklif Durumu</label>
+              <select id="teklifDurumu" class="form-control" required>
+                <option value="Beklemede">Beklemede</option>
+                <option value="Onaylandı">Onaylandı</option>
+                <option value="Kaybedildi">Kaybedildi</option>
+                <option value="İptal">İptal</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="tarih">Tarih</label>
+              <input type="date" id="tarih" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="odemeSekli">Ödeme Şekli</label>
+              <input type="text" id="odemeSekli" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="gecerlilikSuresi">Geçerlilik Süresi</label>
+              <input type="text" id="gecerlilikSuresi" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="alinanTeklifler">Alınan Teklifler</label>
+              <select id="alinanTeklifler" class="form-control" multiple></select>
+            </div>
+            <div class="form-group">
+              <label for="dosyalar">Dosyalar</label>
+              <input type="file" id="dosyalar" class="form-control" multiple>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ürün/Hizmet Bilgileri -->
+        <h5>Ürün/Hizmet Bilgileri</h5>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="iskontoCheckbox">
+            <span>İskonto Ekle</span>
+          </label>
+          <label>
+            <input type="checkbox" id="kdvCheckbox">
+            <span>KDV Ekle</span>
+          </label>
+        </div>
+        <table class="table product-table">
+          <thead>
+            <tr>
+              <th>Ürün / Hizmet Adı</th>
+              <th>Özellikleri</th>
+              <th>Miktar</th>
+              <th>Birim</th>
+              <th>Birim Fiyat</th>
+              <th>PB</th>
+              <th>Tutar</th>
+              <th class="iskonto-container hidden">İskonto Tutarı</th>
+              <th class="kdvOrani-container hidden">KDV Oranı</th>
+              <th class="kdvliTutar-container hidden">KDV’li Tutar</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody">
+            <tr>
+              <td><input type="text" class="urunAdi"></td>
+              <td><input type="text" class="ozellikler"></td>
+              <td><input type="number" class="miktar"></td>
+              <td>
+                <select class="birim">
+                  <option value="Adet" selected>Adet</option>
+                  <option value="Cilt">Cilt</option>
+                  <option value="Koçan">Koçan</option>
+                  <option value="Paket">Paket</option>
+                  <option value="Koli">Koli</option>
+                  <option value="Ton">Ton</option>
+                  <option value="Kg">Kg</option>
+                  <option value="g">g</option>
+                  <option value="Lt">Lt</option>
+                  <option value="ml">ml</option>
+                  <option value="Metre">Metre</option>
+                </select>
+              </td>
+              <td><input type="text" class="birimFiyat" placeholder="0,00"></td>
+              <td>
+                <select class="paraBirimi">
+                  <option value="₺" selected>₺</option>
+                  <option value="$">$</option>
+                  <option value="€">€</option>
+                </select>
+              </td>
+              <td><input type="text" class="tutar" readonly></td>
+              <td class="iskonto-container hidden"><input type="text" class="iskontoTutar"></td>
+              <td class="kdvOrani-container hidden"><input type="text" class="kdvOrani" placeholder="%"></td>
+              <td class="kdvliTutar-container hidden"><input type="text" class="kdvliTutar" readonly></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="add-row-btn">
+          <button class="btn" type="button" onclick="addRow()">EKLE</button>
+        </div>
+        <div class="save-btn">
+          <button class="btn btn-primary" type="submit">KAYDET</button>
+        </div>
       </form>
     </div>
   </div>
@@ -153,4 +277,59 @@
       })
       .updateTeklif(updatedData);
   }
+
+  function addRow() {
+    const row = `
+      <tr>
+        <td><input type="text" class="urunAdi"></td>
+        <td><input type="text" class="ozellikler"></td>
+        <td><input type="number" class="miktar"></td>
+        <td>
+          <select class="birim">
+            <option value="Adet" selected>Adet</option>
+            <option value="Cilt">Cilt</option>
+            <option value="Koçan">Koçan</option>
+            <option value="Paket">Paket</option>
+            <option value="Koli">Koli</option>
+            <option value="Ton">Ton</option>
+            <option value="Kg">Kg</option>
+            <option value="g">g</option>
+            <option value="Lt">Lt</option>
+            <option value="ml">ml</option>
+            <option value="Metre">Metre</option>
+          </select>
+        </td>
+        <td><input type="text" class="birimFiyat" placeholder="0,00"></td>
+        <td>
+          <select class="paraBirimi">
+            <option value="₺" selected>₺</option>
+            <option value="$">$</option>
+            <option value="€">€</option>
+          </select>
+        </td>
+        <td><input type="text" class="tutar" readonly></td>
+        <td class="iskonto-container hidden"><input type="text" class="iskontoTutar"></td>
+        <td class="kdvOrani-container hidden"><input type="text" class="kdvOrani" placeholder="%"></td>
+        <td class="kdvliTutar-container hidden"><input type="text" class="kdvliTutar" readonly></td>
+      </tr>
+    `;
+    $('#productTableBody').append(row);
+    $('select').formSelect();
+  }
+
+  $(document).on('input change', '.miktar, .birimFiyat, .iskontoTutar, .kdvOrani', function() {
+    const row = $(this).closest('tr');
+    const miktar = parseFloat(row.find('.miktar').val()) || 0;
+    const birimFiyat = parseFloat(row.find('.birimFiyat').val().replace(/[^\d,-]/g, '').replace(',', '.')) || 0;
+    const iskontoTutar = parseFloat(row.find('.iskontoTutar').val().replace(/[^\d,-]/g, '').replace(',', '.')) || 0;
+    const kdvOrani = parseFloat(row.find('.kdvOrani').val().replace(/[^\d,-]/g, '').replace(',', '.')) || 0;
+    const paraBirimi = row.find('.paraBirimi').val() || '₺';
+
+    const tutar = miktar * birimFiyat;
+    const netTutar = tutar - iskontoTutar;
+    const kdvliTutar = netTutar + (netTutar * (kdvOrani / 100));
+
+    row.find('.tutar').val(`${tutar.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${paraBirimi}`);
+    row.find('.kdvliTutar').val(`${kdvliTutar.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${paraBirimi}`);
+  });
 </script>
