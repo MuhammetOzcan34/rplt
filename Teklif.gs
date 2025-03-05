@@ -1,29 +1,44 @@
 class Teklif {
-  static getList(search = '') {
-    let data = Database.getAll('Teklifler');
-    
-    if(search) {
-      data = data.filter(row => 
-        row[1].toLowerCase().includes(search.toLowerCase()) || 
-        row[3].toLowerCase().includes(search.toLowerCase())
+  static getList(search = '', pageNumber = 1) {
+    try {
+      const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Teklifler');
+      const data = sheet.getDataRange().getValues();
+      data.shift(); // Başlık satırını çıkar
+
+      // Filtreleme
+      const filteredData = data.filter(row =>
+        row[1].toString().toLowerCase().includes(search.toLowerCase())
       );
+
+      // Sayfalama
+      const pageSize = 25;
+      const startIndex = (pageNumber - 1) * pageSize;
+      const pageData = filteredData.slice(startIndex, startIndex + pageSize);
+
+      return {
+        data: pageData.map(row => ({
+          id: row[0],
+          teklifNo: row[1],
+          teklifTuru: row[2],
+          tarih: row[3],
+          firmaAdi: row[4],
+          teklifKonusu: row[5],
+          yetkiliKisi: row[6],
+          teklifDurumu: row[7],
+          odemeKosulu: row[8],
+          gecerlilikSuresi: row[9],
+          toplamTutar: row[10]
+        })),
+        totalItems: filteredData.length,
+        pageNumber: pageNumber,
+        pageSize: pageSize
+      };
+    } catch (e) {
+      Logger.log('Hata:', e.toString());
+      throw e;
     }
-    
-    return data.map(row => ({
-      id: row[0],
-      teklifNo: row[1],
-      teklifTuru: row[2],
-      tarih: row[3],
-      firmaAdi: row[4],
-      teklifKonusu: row[5], 
-      yetkiliKisi: row[6],
-      teklifDurumu: row[7],
-      odemeKosulu: row[8],
-      gecerlilikSuresi: row[9],
-      toplamTutar: row[10]
-    }));
   }
-  
+
   static add(data) {
     Utilities.validateRequired(data, ['teklifTuru', 'firmaAdi', 'teklifKonusu']);
     
@@ -48,10 +63,10 @@ class Teklif {
     Database.insert('Teklifler', row);
     return id;
   }
-  
+
   static update(id, data) {
     const row = Database.findById('Teklifler', id);
-    if(!row) throw new Error('Teklif bulunamadı');
+    if (!row) throw new Error('Teklif bulunamadı');
     
     const updatedRow = [
       id,
@@ -70,28 +85,12 @@ class Teklif {
     Database.update('Teklifler', row.rowIndex, updatedRow);
     return true;
   }
-  
+
   static delete(id) {
     const row = Database.findById('Teklifler', id);
-    if(!row) throw new Error('Teklif bulunamadı');
+    if (!row) throw new Error('Teklif bulunamadı');
     
     Database.delete('Teklifler', row.rowIndex);
     return true;
-  }
-  
-  static getKalemler(teklifId) {
-    const data = Database.getAll('TeklifKalemleri');
-    return data.filter(row => row[0] === teklifId).map(row => ({
-      urunHizmet: row[1],
-      miktar: row[2],
-      birim: row[3],
-      birimFiyat: row[4],
-      paraBirimi: row[5],
-      tutar: row[6],
-      iskonto: row[7],
-      netTutar: row[8],
-      kdvOrani: row[9],
-      toplamTutar: row[10]
-    }));
   }
 }
