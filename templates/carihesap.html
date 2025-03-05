@@ -1,9 +1,10 @@
+<!-- templates/carihesap.html -->
 <div class="container mt-5">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h3>Cari Hesaplar</h3>
     <input type="text" id="searchInput" class="form-control w-25" placeholder="Arama..." oninput="searchCariHesaplar()">
   </div>
-
+  
   <!-- Tab Menü -->
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item" role="presentation">
@@ -17,7 +18,7 @@
       </button>
     </li>
   </ul>
-
+  
   <!-- Tab İçerikleri -->
   <div class="tab-content" id="myTabContent">
     <!-- Cari Hesap Listesi -->
@@ -37,20 +38,13 @@
               <th>İşlemler</th>
             </tr>
           </thead>
-          <tbody id="cariHesapList"></tbody>
+          <tbody id="cariHesapList">
+            <!-- JavaScript ile doldurulacak -->
+          </tbody>
         </table>
       </div>
-
-      <!-- Sayfalama -->
-      <nav>
-        <ul class="pagination justify-content-center">
-          <li class="page-item"><a class="page-link" href="#" onclick="changePage(1)">1</a></li>
-          <li class="page-item"><a class="page-link" href="#" onclick="changePage(2)">2</a></li>
-          <li class="page-item"><a class="page-link" href="#" onclick="showAllGorevler()">Tümü</a></li>
-        </ul>
-      </nav>
     </div>
-
+    
     <!-- Yeni Cari Hesap Ekle -->
     <div class="tab-pane fade" id="yeniCariHesap" role="tabpanel" aria-labelledby="yeniCariHesap-tab">
       <form id="cariHesapForm" class="mt-3" onsubmit="submitCariHesapForm(event)">
@@ -107,19 +101,13 @@
 
 <!-- JavaScript Fonksiyonları -->
 <script>
-  let currentPage = 1;
 
+  
   // Cari Hesap listesini yükle
   function loadCariHesapList(data) {
     const tbody = $('#cariHesapList');
     tbody.empty();
-
-    // data parametresinin bir dizi olup olmadığını kontrol et
-    if (!Array.isArray(data)) {
-      console.error('Hata: data bir dizi değil!', data);
-      return;
-    }
-
+    
     data.forEach(function(item) {
       tbody.append(`
         <tr data-id="${item.id}">
@@ -142,24 +130,6 @@
         </tr>
       `);
     });
-  }
-
-  // Dinamik Arama
-  function searchCariHesaplar() {
-    const searchTerm = $('#searchInput').val();
-    loadPage('carihesap', searchTerm, currentPage);
-  }
-
-  // Sayfa değiştirme
-  function changePage(page) {
-    currentPage = page;
-    loadPage('carihesap', $('#searchInput').val(), currentPage);
-  }
-
-  // Tümünü göster
-  function showAllGorevler() {
-    currentPage = 1;
-    loadPage('carihesap', $('#searchInput').val(), 0); // 0, tümünü göster anlamına gelir
   }
 
   // Cari Hesap Silme
@@ -203,5 +173,32 @@
         }
       })
       .updateCariHesap(updatedData);
+  }
+
+  // Yeni Cari Hesap Formu Gönderme
+  function submitCariHesapForm(event) {
+    event.preventDefault(); // Formun otomatik gönderilmesini engelle
+    const form = event.target;
+    const formData = new FormData(form);
+    const data = {};
+  
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+  
+    google.script.run
+      .withSuccessHandler(function (result) {
+        if (result.success) {
+          alert(result.message);
+          form.reset(); // Formu temizle
+          loadPage('carihesap'); // Sayfayı yenile
+        } else {
+          alert(result.message);
+        }
+      })
+      .withFailureHandler(function (error) {
+        alert('Hata: ' + error.message);
+      })
+      .addCariHesap(data);
   }
 </script>
