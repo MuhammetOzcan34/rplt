@@ -1,4 +1,3 @@
-<!-- templates/carihesap.html -->
 <div class="container mt-5">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h3>Cari Hesaplar</h3>
@@ -101,8 +100,6 @@
 
 <!-- JavaScript Fonksiyonları -->
 <script>
-
-  
   // Cari Hesap listesini yükle
   function loadCariHesapList(data) {
     const tbody = $('#cariHesapList');
@@ -200,5 +197,11 @@
         alert('Hata: ' + error.message);
       })
       .addCariHesap(data);
+  }
+
+  // Arama Fonksiyonu
+  function searchCariHesaplar() {
+    const searchTerm = $('#searchInput').val();
+    loadPage('carihesap', searchTerm);
   }
 </script>
