@@ -40,57 +40,75 @@ class Teklif {
   }
 
   static add(data) {
-    Utilities.validateRequired(data, ['teklifTuru', 'firmaAdi', 'teklifKonusu']);
-    
-    const id = Utilities.generateId();
-    const teklifNo = data.teklifTuru === 'Verilen' ? 'FT' : 'ST' + 
-      (Database.getAll('Teklifler').length + 1).toString().padStart(4, '0');
-      
-    const row = [
-      id,
-      teklifNo,
-      data.teklifTuru,
-      Utilities.formatDate(new Date()),
-      data.firmaAdi,
-      data.teklifKonusu,
-      data.yetkiliKisi,
-      'Beklemede', // Varsayılan durum
-      data.odemeKosulu,
-      data.gecerlilikSuresi,
-      data.toplamTutar
-    ];
-    
-    Database.insert('Teklifler', row);
-    return id;
+    try {
+      // Gerekli alanların kontrolü
+      if (!data.teklifTuru || !data.firmaAdi || !data.teklifKonusu) {
+        throw new Error('Zorunlu alanlar eksik: teklifTuru, firmaAdi, teklifKonusu');
+      }
+
+      const id = Utilities.generateId();
+      const teklifNo = data.teklifTuru === 'Verilen' ? 'FT' : 'ST' +
+        (Database.getAll('Teklifler').length + 1).toString().padStart(4, '0');
+
+      const row = [
+        id,
+        teklifNo,
+        data.teklifTuru,
+        Utilities.formatDate(new Date()),
+        data.firmaAdi,
+        data.teklifKonusu,
+        data.yetkiliKisi,
+        'Beklemede', // Varsayılan durum
+        data.odemeKosulu,
+        data.gecerlilikSuresi,
+        data.toplamTutar
+      ];
+
+      Database.insert('Teklifler', row);
+      return { success: true, message: 'Teklif başarıyla eklendi', id: id };
+    } catch (e) {
+      Logger.log('Hata:', e.toString());
+      return { success: false, message: e.message };
+    }
   }
 
   static update(id, data) {
-    const row = Database.findById('Teklifler', id);
-    if (!row) throw new Error('Teklif bulunamadı');
-    
-    const updatedRow = [
-      id,
-      row[1], // Teklif no değişmez
-      data.teklifTuru,
-      row[3], // Tarih değişmez
-      data.firmaAdi,
-      data.teklifKonusu,
-      data.yetkiliKisi,
-      data.teklifDurumu,
-      data.odemeKosulu,
-      data.gecerlilikSuresi,
-      data.toplamTutar
-    ];
-    
-    Database.update('Teklifler', row.rowIndex, updatedRow);
-    return true;
+    try {
+      const row = Database.findById('Teklifler', id);
+      if (!row) throw new Error('Teklif bulunamadı');
+
+      const updatedRow = [
+        id,
+        row[1], // Teklif no değişmez
+        data.teklifTuru,
+        row[3], // Tarih değişmez
+        data.firmaAdi,
+        data.teklifKonusu,
+        data.yetkiliKisi,
+        data.teklifDurumu,
+        data.odemeKosulu,
+        data.gecerlilikSuresi,
+        data.toplamTutar
+      ];
+
+      Database.update('Teklifler', row.rowIndex, updatedRow);
+      return { success: true, message: 'Teklif başarıyla güncellendi' };
+    } catch (e) {
+      Logger.log('Hata:', e.toString());
+      return { success: false, message: e.message };
+    }
   }
 
   static delete(id) {
-    const row = Database.findById('Teklifler', id);
-    if (!row) throw new Error('Teklif bulunamadı');
-    
-    Database.delete('Teklifler', row.rowIndex);
-    return true;
+    try {
+      const row = Database.findById('Teklifler', id);
+      if (!row) throw new Error('Teklif bulunamadı');
+
+      Database.delete('Teklifler', row.rowIndex);
+      return { success: true, message: 'Teklif başarıyla silindi' };
+    } catch (e) {
+      Logger.log('Hata:', e.toString());
+      return { success: false, message: e.message };
+    }
   }
 }
