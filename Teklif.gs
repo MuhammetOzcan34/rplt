@@ -46,8 +46,8 @@ class Teklif {
         throw new Error('Zorunlu alanlar eksik: teklifTuru, firmaAdi, teklifKonusu');
       }
 
-      const id = Utilities.generateId();
-      const teklifNo = data.teklifTuru === 'Verilen' ? 'FT' : 'ST' +
+      const id = Utilities.getUuid();
+      const teklifNo = (data.teklifTuru === 'Verilen' ? 'FT' : 'ST') +
         (Database.getAll('Teklifler').length + 1).toString().padStart(4, '0');
 
       const row = [
@@ -110,5 +110,23 @@ class Teklif {
       Logger.log('Hata:', e.toString());
       return { success: false, message: e.message };
     }
+  }
+}
+
+function loadTeklifVerileri() {
+  try {
+    const firmalarSheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('CariHesaplar');
+    const firmalar = firmalarSheet.getDataRange().getValues().map(row => ({ id: row[0], ad: row[1] }));
+
+    const yetkililerSheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('CariHesaplar');
+    const yetkililer = yetkililerSheet.getDataRange().getValues().map(row => ({ id: row[0], ad: row[4] }));
+
+    const alinanTekliflerSheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Teklifler');
+    const alinanTeklifler = alinanTekliflerSheet.getDataRange().getValues().map(row => ({ id: row[0], ad: row[5] }));
+
+    return { firmalar, yetkililer, alinanTeklifler };
+  } catch (e) {
+    Logger.log('Hata:', e.toString());
+    throw e;
   }
 }
