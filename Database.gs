@@ -73,7 +73,7 @@ class Database {
     try {
       Logger.log(`insert çağrıldı: ${sheetName}`);
       Logger.log('Eklenecek veri: ' + JSON.stringify(data));
-      
+
       const sheet = this.getSheet(sheetName);
       if (!sheet) {
         throw new Error(`${sheetName} sayfası bulunamadı`);
@@ -91,10 +91,10 @@ class Database {
         data[7], // gorevSayisi
         data[8]  // projeSayisi
       ];
-      
+
       Logger.log('Eklenecek satır:', row);
       sheet.appendRow(row);
-      
+
       Logger.log('Veri başarıyla eklendi');
       return true;
     } catch (e) {
