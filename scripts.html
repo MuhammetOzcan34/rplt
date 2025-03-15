@@ -326,23 +326,24 @@
         teklifTuru: row.querySelector(".teklifTuru") ? row.querySelector(".teklifTuru").innerText : "",
         tarih: row.querySelector(".tarih") ? row.querySelector(".tarih").innerText : "",
         firmaAdi: row.querySelector(".firmaAdi") ? row.querySelector(".firmaAdi").innerText : "",
-      const birimFiyat = parseFloat(row.find('.birimFiyat').val().replace(/[^\\d\\.]/g, '')) || 0;
-      const iskontoTutar = parseFloat(row.find('.iskontoTutar').val().replace(/[^\\d\\.]/g, '')) || 0;
-      const kdvOrani = parseFloat(row.find('.kdvOrani').val().replace(/[^\\d\\.]/g, '')) || 0;
-
-      // Tutar hesapla
-      const tutar = miktar * birimFiyat;
-      row.find('.tutar').val(tutar.toFixed(2));
-
-      // İskonto uygula
-      const iskontoUygulanmisTutar = tutar - iskontoTutar;
-      row.find('.netTutar').val(iskontoUygulanmisTutar.toFixed(2));
-
-      // KDV uygula
-      const kdvTutari = iskontoUygulanmisTutar * (kdvOrani / 100);
-      const netTutar = iskontoUygulanmisTutar + kdvTutari;
-      row.find('.netTutar').val(netTutar.toFixed(2));
-    });
+        teklifKonusu: row.querySelector(".teklifKonusu") ? row.querySelector(".teklifKonusu").innerText : "",
+        yetkiliKisi: row.querySelector(".yetkiliKisi") ? row.querySelector(".yetkiliKisi").innerText : "",
+        teklifDurumu: row.querySelector(".teklifDurumu") ? row.querySelector(".teklifDurumu").innerText : "",
+        odemeSekli: row.querySelector(".odemeSekli") ? row.querySelector(".odemeSekli").innerText : "",
+        gecerlilikSuresi: row.querySelector(".gecerlilikSuresi") ? row.querySelector(".gecerlilikSuresi").innerText : "",
+        toplamTutar: row.querySelector(".toplamTutar") ? row.querySelector(".toplamTutar").innerText : ""
+      };
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            alert("Teklif başarıyla güncellendi.");
+            loadPage('teklif');
+          } else {
+            alert("Güncelleme başarısız!");
+          }
+        })
+        .updateTeklif(updatedData);
+    }
 
     // Form gönderme işlemi
     function submitTeklifForm(event) {
@@ -366,59 +367,72 @@
       $('#productTableBody tr').each(function() {
         const row = $(this);
         urunHizmetBilgileri.push({
-          urunAdi: row.find('.urunAdi').val(),
-          ozellikler: row.find('.ozellikler').val(),
-          miktar: row.find('.miktar').val(),
-          birim: row.find('.birim').val(),
-          birimFiyat: row.find('.birimFiyat').val(),
-          paraBirimi: row.find('.paraBirimi').val(),
-          tutar: row.find('.tutar').val(),
-          iskontoTutar: row.find('.iskontoTutar').val(),
-          kdvOrani: row.find('.kdvOrani').val(),
-          netTutar: row.find('.netTutar').val()
-        });
+                  urunAdi: row.find('.urunAdi').val(),
+        ozellikler: row.find('.ozellikler').val(),
+        miktar: row.find('.miktar').val(),
+        birim: row.find('.birim').val(),
+        birimFiyat: row.find('.birimFiyat').val(),
+        paraBirimi: row.find('.paraBirimi').val(),
+        tutar: row.find('.tutar').val(),
+        iskontoTutar: row.find('.iskontoTutar').val(),
+        kdvOrani: row.find('.kdvOrani').val(),
+        netTutar: row.find('.netTutar').val()
       });
+    });
 
-      // Verileri Google Apps Script'e gönder
-      google.script.run
-        .withSuccessHandler(function(response) {
-          if (response.success) {
-            alert("Teklif başarıyla kaydedildi!");
-            loadPage('teklif');
-          } else {
-            alert("Kaydetme işlemi başarısız!");
-          }
-        })
-        .withFailureHandler(function(error) {
-          alert("Hata: " + error.message);
-        })
-        .saveTeklif(genelBilgiler, urunHizmetBilgileri);
-    }
+    // Verileri Google Apps Script'e gönder
+    google.script.run
+      .withSuccessHandler(function(response) {
+        if (response.success) {
+          alert("Teklif başarıyla kaydedildi!");
+          loadPage('teklif');
+        } else {
+          alert("Kaydetme işlemi başarısız!");
+        }
+      })
+      .withFailureHandler(function(error) {
+        alert("Hata: " + error.message);
+      })
+      .saveTeklif(genelBilgiler, urunHizmetBilgileri);
+  }
 
-    // Firma Adı ve Yetkili Kişi açılır listelerini doldur
-    function loadCariHesaplar() {
-      google.script.run.withSuccessHandler(function(cariListesi) {
-        const firmaSelect = document.getElementById("firmaAdi");
-        const yetkiliSelect = document.getElementById("yetkiliKisi");
+  // Firma Adı ve Yetkili Kişi açılır listelerini doldur
+  function loadCariHesaplar() {
+    google.script.run.withSuccessHandler(function(cariListesi) {
+      const firmaSelect = document.getElementById("firmaAdi");
+      const yetkiliSelect = document.getElementById("yetkiliKisi");
 
-        cariListesi.forEach(item => {
-          const firmaOption = document.createElement("option");
-          firmaOption.value = item.firmaAdi;
-          firmaOption.textContent = item.firmaAdi;
-          firmaSelect.appendChild(firmaOption);
+      firmaSelect.innerHTML = '';
+      yetkiliSelect.innerHTML = '';
 
-          const yetkiliOption = document.createElement("option");
-          yetkiliOption.value = item.yetkiliKisi;
-          yetkiliOption.textContent = item.yetkiliKisi;
-          yetkiliSelect.appendChild(yetkiliOption);
-        });
-      }).getCariHesaplar();
-    }
+      cariListesi.forEach(item => {
+        const firmaOption = document.createElement("option");
+        firmaOption.value = item.firmaAdi;
+        firmaOption.textContent = item.firmaAdi;
+        firmaSelect.appendChild(firmaOption);
 
-    // Sayfa yüklendiğinde Cari Hesapları yükle
-    window.onload = function() {
-      loadCariHesaplar();
-    };
+        const yetkiliOption = document.createElement("option");
+        yetkiliOption.value = item.yetkiliKisi;
+        yetkiliOption.textContent = item.yetkiliKisi;
+        yetkiliSelect.appendChild(yetkiliOption);
+      });
+    }).getCariHesaplar();
+  }
+
+  // Sayfa yüklendiğinde Cari Hesapları yükle
+  window.onload = function() {
+    loadCariHesaplar();
+  };
+
+  // Teklifler sayfasını yükle
+  function loadPage(page, search = "", pageNumber = 1) {
+    google.script.run.withSuccessHandler(function(response) {
+      document.querySelector("#myTabContent").innerHTML = response.html;
+      loadTeklifList(response.data.data);
+    }).withFailureHandler(function(error) {
+      alert("Sayfa yüklenemedi: " + error.message);
+    }).handlePageLoad(page, search, pageNumber);
+  }
   </script>
 </body>
 </html>
