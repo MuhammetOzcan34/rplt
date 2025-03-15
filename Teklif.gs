@@ -161,6 +161,7 @@ class Teklif {
   }
 }
 
+// Cari Hesaplar fonksiyonu
 function getCariHesaplar() {
   try {
     const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('CariHesaplar');
