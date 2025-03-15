@@ -10,8 +10,8 @@
       display: none;
     }
     .container {
-      max-width: 1280px; /* Sayfa genişliği 1280 piksel */
-      margin: 0 auto; /* Sayfayı ortala */
+      max-width: 1280px;
+      margin: 0 auto;
       padding: 0 15px;
     }
     .header {
@@ -22,7 +22,7 @@
     }
     .form-section {
       margin: 20px auto;
-      max-width: 1280px; /* Form genişliği 1280 piksel */
+      max-width: 1280px;
       padding: 0 15px;
     }
     .product-table {
@@ -35,17 +35,18 @@
     }
     .search-container {
       display: flex;
-      justify-content: space-between; /* Başlık ve arama çubuğunu yan yana hizala */
-      align-items: center; /* Dikeyde ortala */
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 10px;
     }
     #searchInput {
-      width: 300px; /* Arama çubuğunu uzat */
+      width: 300px;
     }
     .nav-tabs {
       margin-top: 10px;
     }
   </style>
+  <script src="scripts.html"></script>
 </head>
 <body>
   <div class="header">
@@ -232,19 +233,19 @@
     function loadTeklifList(data) {
       const tbody = $('#teklifList');
       tbody.empty();
-      if (!data || data.length === 0) {
+      if (!data || !Array.isArray(data)) {
         tbody.append('<tr><td colspan="7">Kayıt bulunamadı</td></tr>');
         return;
       }
       data.forEach(function(item) {
         tbody.append(`
           <tr data-id="${item.id}">
-            <td>${item.teklifNo}</td>
-            <td>${item.tarih}</td>
-            <td>${item.firmaAdi}</td>
-            <td>${item.teklifKonusu}</td>
-            <td>${item.teklifDurumu}</td>
-            <td>${item.toplamTutar}</td>
+            <td class="teklifNo">${item.teklifNo}</td>
+            <td class="tarih">${item.tarih}</td>
+            <td class="firmaAdi">${item.firmaAdi}</td>
+            <td class="teklifKonusu">${item.teklifKonusu}</td>
+            <td class="teklifDurumu">${item.teklifDurumu}</td>
+            <td class="toplamTutar">${item.toplamTutar}</td>
             <td>
               <button class="btn btn-sm btn-icon btn-warning" onclick="editTeklif('${item.id}')">
                 <i class="fas fa-edit"></i>
@@ -260,30 +261,41 @@
 
     // Firma Adı ve Yetkili Kişi açılır listelerini doldur
     function loadCariHesaplar() {
-      google.script.run.withSuccessHandler(function(cariListesi) {
-        const firmaSelect = document.getElementById("firmaAdi");
-        const yetkiliSelect = document.getElementById("yetkiliKisi");
+      google.script.run
+        .withSuccessHandler(function(cariListesi) {
+          const firmaSelect = document.getElementById("firmaAdi");
+          const yetkiliSelect = document.getElementById("yetkiliKisi");
 
-        firmaSelect.innerHTML = '';
-        yetkiliSelect.innerHTML = '';
+          firmaSelect.innerHTML = '';
+          yetkiliSelect.innerHTML = '';
 
-        cariListesi.forEach(item => {
-          const firmaOption = document.createElement("option");
-          firmaOption.value = item.firmaAdi;
-          firmaOption.textContent = item.firmaAdi;
-          firmaSelect.appendChild(firmaOption);
+          cariListesi.forEach(item => {
+            const firmaOption = document.createElement("option");
+            firmaOption.value = item.firmaAdi;
+            firmaOption.textContent = item.firmaAdi;
+            firmaSelect.appendChild(firmaOption);
 
-          const yetkiliOption = document.createElement("option");
-          yetkiliOption.value = item.yetkiliKisi;
-          yetkiliOption.textContent = item.yetkiliKisi;
-          yetkiliSelect.appendChild(yetkiliOption);
-        });
-      }).getCariHesaplar();
+            const yetkiliOption = document.createElement("option");
+            yetkiliOption.value = item.yetkiliKisi;
+            yetkiliOption.textContent = item.yetkiliKisi;
+            yetkiliSelect.appendChild(yetkiliOption);
+          });
+        })
+        .getCariHesaplar();
     }
 
-    // Sayfa yüklendiğinde Cari Hesapları yükle
+    // Sayfa yüklendiğinde teklif listesini yükle
     window.onload = function() {
-      loadCariHesaplar();
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response && response.data && Array.isArray(response.data)) {
+            loadTeklifList(response.data);
+          } else {
+            loadTeklifList([]);
+          }
+          loadCariHesaplar();
+        })
+        .handlePageLoad('teklif'); // Sayfa verilerini al
     };
 
     // Form gönderme işlemi
