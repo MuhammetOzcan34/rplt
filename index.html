@@ -119,7 +119,7 @@
 <!-- JavaScript Fonksiyonları -->
 <script>
 // Sayfa yükleme fonksiyonu
-function loadPage(page) {
+function loadPage(page, search = "", pageNumber = 1) {
   if (!page) {
     console.error("Sayfa parametresi geçersiz veya boş.");
     return;
@@ -168,7 +168,7 @@ function loadPage(page) {
       console.error("Sayfa yükleme hatası:", error);
       $("#content").html(`<div class="alert alert-danger">Hata: ${error.message}</div>`);
     })
-    .handlePageLoad(page);
+    .handlePageLoad(page, search, pageNumber);
 }
 
 // Header'daki bağlantılar için event.preventDefault() ekleme
