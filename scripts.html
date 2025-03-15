@@ -1,301 +1,424 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cari Hesaplar</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
-  </head>
-  <body>
-    <div class="container mt-5">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Cari Hesaplar</h3>
-        <input type="text" id="searchInput" class="form-control w-25" placeholder="Arama..." oninput="searchCariHesaplar()">
-      </div>
-      <div class="row">
-        <div class="col">
-          <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button
-                class="nav-link active"
-                id="cariHesaplar-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#cariHesaplar"
-                type="button"
-                role="tab"
-                aria-controls="cariHesaplar"
-                aria-selected="true"
-              >
-                Cari Hesap Listesi
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button
-                class="nav-link"
-                id="yeniHesap-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#yeniHesap"
-                type="button"
-                role="tab"
-                aria-controls="yeniHesap"
-                aria-selected="false"
-              >
-                Yeni Hesap Ekle
-              </button>
-            </li>
-          </ul>
-          <div class="tab-content" id="myTabContent">
-            <div
-              class="tab-pane fade show active"
-              id="cariHesaplar"
-              role="tabpanel"
-              aria-labelledby="cariHesaplar-tab"
-            >
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th>Firma Adı</th>
-                    <th>Şube/Bölge</th>
-                    <th>Firma Türü</th>
-                    <th>Yetkili Kişi</th>
-                    <th>Telefon</th>
-                    <th>E-posta</th>
-                    <th>Görev Sayısı</th>
-                    <th>Proje Sayısı</th>
-                    <th>İşlemler</th>
-                  </tr>
-                </thead>
-                <tbody id="cariHesapList">
-                  <!-- JavaScript ile doldurulacak -->
-                </tbody>
-              </table>
-            </div>
-            <div
-              class="tab-pane fade"
-              id="yeniHesap"
-              role="tabpanel"
-              aria-labelledby="yeniHesap-tab"
-            >
-              <form id="cariHesapForm">
-                <div class="mb-3">
-                  <label class="form-label">Firma Adı</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    name="firmaAdi"
-                    required
-                  />
-                </div>
-                <div class="row">
-                  <div class="col-md-6">
-                    <div class="mb-3">
-                      <label class="form-label">Şube/Bölge</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        name="subeBolge"
-                      />
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="mb-3">
-                      <label class="form-label">Firma Türü</label>
-                      <select class="form-select" name="firmaTuru" required>
-                        <option value="">Seçiniz...</option>
-                        <option value="Alıcı">Alıcı</option>
-                        <option value="Satıcı">Satıcı</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-6">
-                    <div class="mb-3">
-                      <label class="form-label">Yetkili Kişi</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        name="yetkiliKisi"
-                      />
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="mb-3">
-                      <label class="form-label">Telefon</label>
-                      <input
-                        type="tel"
-                        class="form-control"
-                        name="telefon"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">E-posta</label>
-                  <input
-                    type="email"
-                    class="form-control"
-                    name="email"
-                  />
-                </div>
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  onclick="submitForm(document.getElementById('cariHesapForm'), 'addCariHesap')"
-                >
-                  Kaydet
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teklif Oluşturma</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .hidden {
+      display: none;
+    }
+    .container {
+      max-width: 1280px; /* Sayfa genişliği 1280 piksel */
+      margin: 0 auto; /* Sayfayı ortala */
+      padding: 0 15px;
+    }
+    .header {
+      width: 100%;
+      background-color: #f8f9fa;
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+    }
+    .form-section {
+      margin: 20px auto;
+      max-width: 1280px; /* Form genişliği 1280 piksel */
+      padding: 0 15px;
+    }
+    .product-table {
+      width: 100%;
+      margin-top: 20px;
+    }
+    .add-row-btn, .save-btn {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .search-container {
+      display: flex;
+      justify-content: space-between; /* Başlık ve arama çubuğunu yan yana hizala */
+      align-items: center; /* Dikeyde ortala */
+      margin-bottom: 10px;
+    }
+    #searchInput {
+      width: 300px; /* Arama çubuğunu uzat */
+    }
+    .nav-tabs {
+      margin-top: 10px;
+    }
+    /* Yeni Teklif Ekle Formu Genişlik Ayarları */
+    #teklifForm .row {
+      margin: 0 -10px; /* Form içindeki row'ların padding'ini sıfırla */
+    }
+    #teklifForm .col-md-6 {
+      padding: 0 10px; /* Form içindeki sütunların padding'ini ayarla */
+    }
+    /* Ürün/Hizmet Bilgileri Tablosu Genişlik Ayarları */
+    #productTableBody input,
+    #productTableBody select {
+      width: 100%; /* Input ve select alanlarını tam genişlikte yap */
+    }
+    .urunAdi { width: 95px; } /* %5 küçültülmüş */
+    .ozellikler { width: 110px; } /* %10 büyütülmüş */
+    .miktar { width: 55px; } /* %45 küçültülmüş */
+    .birim { width: 95px; } /* %5 küçültülmüş */
+    .birimFiyat { width: 50px; } /* %50 küçültülmüş */
+    .paraBirimi { width: 50px; } /* Aynı kaldı */
+    .tutar { width: 70px; } /* %30 küçültülmüş */
+    .iskontoTutar { width: 70px; } /* Tutar ile aynı */
+    .kdvOrani { width: 25px; } /* %75 küçültülmüş */
+    .netTutar { width: 85px; } /* %15 küçültülmüş */
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="container">
+      <div class="search-container">
+        <h3>Teklifler</h3>
+        <input type="text" id="searchInput" class="form-control" placeholder="Arama..." oninput="searchTeklifler()">
       </div>
     </div>
-    <!-- jQuery ve Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Ana JavaScript Fonksiyonları -->
-    <script>
-      // Sayfa yükleme ve diğer ortak işlemler
-      $(document).ready(function () {
-        loadPage("carihesap"); // Varsayılan sayfa
+  </div>
+  <div class="container">
+    <!-- Tab Menü -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="teklifListesi-tab" data-bs-toggle="tab" data-bs-target="#teklifListesi" type="button" role="tab" aria-controls="teklifListesi" aria-selected="true">
+          Teklif Listesi
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="yeniTeklif-tab" data-bs-toggle="tab" data-bs-target="#yeniTeklif" type="button" role="tab" aria-controls="yeniTeklif" aria-selected="false">
+          Yeni Teklif Ekle
+        </button>
+      </li>
+    </ul>
+    <!-- Tab İçerikleri -->
+    <div class="tab-content" id="myTabContent">
+      <!-- Teklif Listesi -->
+      <div class="tab-pane fade show active" id="teklifListesi" role="tabpanel" aria-labelledby="teklifListesi-tab">
+        <div class="table-responsive mt-3">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Teklif No</th>
+                <th>Tarih</th>
+                <th>Firma Adı</th>
+                <th>Teklif Konusu</th>
+                <th>Durum</th>
+                <th>Toplam Tutar</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="teklifList"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Yeni Teklif Ekle -->
+      <div class="tab-pane fade" id="yeniTeklif" role="tabpanel" aria-labelledby="yeniTeklif-tab">
+        <form id="teklifForm" class="mt-3 form-section" onsubmit="submitTeklifForm(event)">
+          <!-- Genel Bilgiler -->
+          <h5>Genel Bilgiler</h5>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="teklifTuru">Teklif Türü</label>
+                <select id="teklifTuru" class="form-control" required>
+                  <option value="Verilen">Verilen Teklif</option>
+                  <option value="Alınan">Alınan Teklif</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="firmaAdi">Firma Adı</label>
+                <select id="firmaAdi" class="form-control" required></select>
+              </div>
+              <div class="form-group">
+                <label for="teklifKonusu">Teklif Konusu</label>
+                <input type="text" id="teklifKonusu" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="yetkiliKisi">Yetkili Kişi</label>
+                <select id="yetkiliKisi" class="form-control" required></select>
+              </div>
+              <div class="form-group">
+                <label for="teklifDurumu">Teklif Durumu</label>
+                <select id="teklifDurumu" class="form-control" required>
+                  <option value="Beklemede">Beklemede</option>
+                  <option value="Onaylandı">Onaylandı</option>
+                  <option value="Kaybedildi">Kaybedildi</option>
+                  <option value="İptal">İptal</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="tarih">Tarih</label>
+                <input type="date" id="tarih" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="odemeSekli">Ödeme Şekli</label>
+                <input type="text" id="odemeSekli" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="gecerlilikSuresi">Geçerlilik Süresi</label>
+                <input type="text" id="gecerlilikSuresi" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="alinanTeklifler">Alınan Teklifler</label>
+                <select id="alinanTeklifler" class="form-control" multiple></select>
+              </div>
+              <div class="form-group">
+                <label for="dosyalar">Dosyalar</label>
+                <input type="file" id="dosyalar" class="form-control" multiple>
+              </div>
+            </div>
+          </div>
+          <!-- Ürün/Hizmet Bilgileri -->
+          <h5>Ürün/Hizmet Bilgileri</h5>
+          <div class="form-group d-flex justify-content-end">
+            <label class="mr-3">
+              <input type="checkbox" id="iskontoCheckbox">
+              <span>İskonto Ekle</span>
+            </label>
+            <label>
+              <input type="checkbox" id="kdvCheckbox">
+              <span>KDV Ekle</span>
+            </label>
+          </div>
+          <table class="table product-table">
+            <thead>
+              <tr>
+                <th>Ürün / Hizmet Adı</th>
+                <th>Özellikleri</th>
+                <th>Miktar</th>
+                <th>Birim</th>
+                <th>Birim Fiyat</th>
+                <th>PB</th>
+                <th>Tutar</th>
+                <th class="iskonto-container hidden">İskonto Tutarı</th>
+                <th class="kdvOrani-container hidden">KDV Oranı</th>
+                <th>NET TUTAR</th>
+              </tr>
+            </thead>
+            <tbody id="productTableBody">
+              <tr>
+                <td><input type="text" class="urunAdi"></td>
+                <td><input type="text" class="ozellikler"></td>
+                <td><input type="number" class="miktar"></td>
+                <td>
+                  <select class="birim">
+                    <option value="Adet" selected>Adet</option>
+                    <option value="Cilt">Cilt</option>
+                    <option value="Koçan">Koçan</option>
+                    <option value="Paket">Paket</option>
+                    <option value="Koli">Koli</option>
+                    <option value="Ton">Ton</option>
+                    <option value="Kg">Kg</option>
+                    <option value="g">g</option>
+                    <option value="Lt">Lt</option>
+                    <option value="ml">ml</option>
+                    <option value="Metre">Metre</option>
+                  </select>
+                </td>
+                <td><input type="text" class="birimFiyat" placeholder="0,00"></td>
+                <td>
+                  <select class="paraBirimi">
+                    <option value="₺" selected>₺</option>
+                    <option value="$">$</option>
+                    <option value="€">€</option>
+                  </select>
+                </td>
+                <td><input type="text" class="tutar" readonly></td>
+                <td class="iskonto-container hidden"><input type="text" class="iskontoTutar"></td>
+                <td class="kdvOrani-container hidden"><input type="text" class="kdvOrani" placeholder="%"></td>
+                <td class="netTutar-container"><input type="text" class="netTutar" readonly></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="add-row-btn">
+            <button class="btn" type="button" onclick="addRow()">EKLE</button>
+          </div>
+          <div class="save-btn">
+            <button class="btn btn-primary" type="submit">KAYDET</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- JavaScript Fonksiyonları -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    let currentPage = 1;
 
-        // Menü tıklama (opsiyonel, inline onclick'ler kullanılabiliyor)
-        $(".nav-link").click(function (e) {
-          e.preventDefault();
-          const page = $(this).data("page");
-          loadPage(page);
-        });
+    // Teklif listesini yükle
+    function loadTeklifList(data) {
+      const tbody = $('#teklifList');
+      tbody.empty();
+      if (!data || data.length === 0) {
+        tbody.append('<tr><td colspan="7">Kayıt bulunamadı</td></tr>');
+        return;
+      }
+      data.forEach(function(item) {
+        tbody.append(`
+          <tr data-id="${item.id}">
+            <td>${item.teklifNo}</td>
+            <td>${item.tarih}</td>
+            <td>${item.firmaAdi}</td>
+            <td>${item.teklifKonusu}</td>
+            <td>${item.teklifDurumu}</td>
+            <td>${item.toplamTutar}</td>
+            <td>
+              <button class="btn btn-sm btn-icon btn-warning" onclick="editTeklif('${item.id}')">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-icon btn-danger" onclick="deleteTeklif('${item.id}')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `);
+      });
+    }
 
-        // Arama (eğer searchInput varsa)
-        $("#searchInput").on("keyup", function () {
-          const searchTerm = $(this).val();
-          const currentPage = $(".nav-link.active").data("page");
-          loadPage(currentPage, searchTerm);
+    // Dinamik Arama
+    function searchTeklifler() {
+      const searchTerm = $('#searchInput').val();
+      loadPage('teklif', searchTerm, currentPage);
+    }
+
+    // Sayfa değiştirme
+    function changePage(page) {
+      currentPage = page;
+      loadPage('teklif', $('#searchInput').val(), currentPage);
+    }
+
+    // Tümünü göster
+    function showAllTeklifler() {
+      currentPage = 1;
+      loadPage('teklif', $('#searchInput').val(), 0); // 0, tümünü göster anlamına gelir
+    }
+
+    // Teklif Silme
+    function deleteTeklif(id) {
+      if (!confirm("Bu teklifi silmek istediğinize emin misiniz?")) return;
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            alert("Teklif başarıyla silindi.");
+            loadPage('teklif');
+          } else {
+            alert("Silme işlemi başarısız!");
+          }
+        })
+        .deleteTeklif(id);
+    }
+
+    // Teklif Düzenleme
+    function editTeklif(id) {
+      const row = document.querySelector(`tr[data-id='${id}']`);
+      if (!row) {
+        alert("Kayıt bulunamadı!");
+        return;
+      }
+      const updatedData = {
+        id: id,
+        teklifNo: row.querySelector(".teklifNo") ? row.querySelector(".teklifNo").innerText : "",
+        teklifTuru: row.querySelector(".teklifTuru") ? row.querySelector(".teklifTuru").innerText : "",
+        tarih: row.querySelector(".tarih") ? row.querySelector(".tarih").innerText : "",
+        firmaAdi: row.querySelector(".firmaAdi") ? row.querySelector(".firmaAdi").innerText : "",
+      const birimFiyat = parseFloat(row.find('.birimFiyat').val().replace(/[^\\d\\.]/g, '')) || 0;
+      const iskontoTutar = parseFloat(row.find('.iskontoTutar').val().replace(/[^\\d\\.]/g, '')) || 0;
+      const kdvOrani = parseFloat(row.find('.kdvOrani').val().replace(/[^\\d\\.]/g, '')) || 0;
+
+      // Tutar hesapla
+      const tutar = miktar * birimFiyat;
+      row.find('.tutar').val(tutar.toFixed(2));
+
+      // İskonto uygula
+      const iskontoUygulanmisTutar = tutar - iskontoTutar;
+      row.find('.netTutar').val(iskontoUygulanmisTutar.toFixed(2));
+
+      // KDV uygula
+      const kdvTutari = iskontoUygulanmisTutar * (kdvOrani / 100);
+      const netTutar = iskontoUygulanmisTutar + kdvTutari;
+      row.find('.netTutar').val(netTutar.toFixed(2));
+    });
+
+    // Form gönderme işlemi
+    function submitTeklifForm(event) {
+      event.preventDefault();
+
+      // Genel bilgileri al
+      const genelBilgiler = {
+        teklifTuru: $('#teklifTuru').val(),
+        firmaAdi: $('#firmaAdi').val(),
+        teklifKonusu: $('#teklifKonusu').val(),
+        yetkiliKisi: $('#yetkiliKisi').val(),
+        teklifDurumu: $('#teklifDurumu').val(),
+        tarih: $('#tarih').val(),
+        odemeSekli: $('#odemeSekli').val(),
+        gecerlilikSuresi: $('#gecerlilikSuresi').val(),
+        toplamTutar: $('#toplamTutar').val()
+      };
+
+      // Ürün/Hizmet bilgilerini al
+      const urunHizmetBilgileri = [];
+      $('#productTableBody tr').each(function() {
+        const row = $(this);
+        urunHizmetBilgileri.push({
+          urunAdi: row.find('.urunAdi').val(),
+          ozellikler: row.find('.ozellikler').val(),
+          miktar: row.find('.miktar').val(),
+          birim: row.find('.birim').val(),
+          birimFiyat: row.find('.birimFiyat').val(),
+          paraBirimi: row.find('.paraBirimi').val(),
+          tutar: row.find('.tutar').val(),
+          iskontoTutar: row.find('.iskontoTutar').val(),
+          kdvOrani: row.find('.kdvOrani').val(),
+          netTutar: row.find('.netTutar').val()
         });
       });
 
-      function loadPage(page, search = "") {
-        console.log("Sayfa yükleniyor:", page);
-        $("#content").html(
-          '<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i></div>'
-        );
-
-        google.script.run
-          .withSuccessHandler(function (result) {
-            console.log("Sayfa içeriği ve veriler alındı");
-            if (result && result.html) {
-              $("#content").html(result.html);
-              $(".nav-link").removeClass("active");
-              $(`[data-page="${page}"]`).addClass("active");
-
-              // Veri yüklüyorsa (örneğin cari hesap listesi)
-              if (result.data) {
-                switch (page) {
-                  case "carihesap":
-                    loadCariHesapList(result.data);
-                    break;
-                  // Diğer sayfalar için benzer işlemler
-                  default:
-                    console.error("Geçersiz sayfa:", page);
-                }
-              }
-            } else {
-              console.error("Sayfa içeriği boş");
-              $("#content").html(
-                '<div class="alert alert-danger">Sayfa içeriği yüklenemedi</div>'
-              );
-            }
-          })
-          .withFailureHandler(function (error) {
-            console.error("Sayfa yükleme hatası:", error);
-            $("#content").html(
-              `<div class="alert alert-danger">Hata: ${error.message}</div>`
-            );
-          })
-          .handlePageLoad(page, search);
-      }
-
-      // Form işlemleri
-      function submitForm(form, handler) {
-        const formData = new FormData(form);
-        const data = {};
-        formData.forEach((value, key) => {
-          if (key.endsWith("[]")) {
-            const cleanKey = key.slice(0, -2);
-            if (!data[cleanKey]) {
-              data[cleanKey] = [];
-            }
-            data[cleanKey].push(value);
+      // Verileri Google Apps Script'e gönder
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response.success) {
+            alert("Teklif başarıyla kaydedildi!");
+            loadPage('teklif');
           } else {
-            data[key] = value;
+            alert("Kaydetme işlemi başarısız!");
           }
+        })
+        .withFailureHandler(function(error) {
+          alert("Hata: " + error.message);
+        })
+        .saveTeklif(genelBilgiler, urunHizmetBilgileri);
+    }
+
+    // Firma Adı ve Yetkili Kişi açılır listelerini doldur
+    function loadCariHesaplar() {
+      google.script.run.withSuccessHandler(function(cariListesi) {
+        const firmaSelect = document.getElementById("firmaAdi");
+        const yetkiliSelect = document.getElementById("yetkiliKisi");
+
+        cariListesi.forEach(item => {
+          const firmaOption = document.createElement("option");
+          firmaOption.value = item.firmaAdi;
+          firmaOption.textContent = item.firmaAdi;
+          firmaSelect.appendChild(firmaOption);
+
+          const yetkiliOption = document.createElement("option");
+          yetkiliOption.value = item.yetkiliKisi;
+          yetkiliOption.textContent = item.yetkiliKisi;
+          yetkiliSelect.appendChild(yetkiliOption);
         });
-        console.log("Gönderilen veri:", data);
-        google.script.run
-          .withSuccessHandler(function (result) {
-            if (result.success) {
-              alert(result.message);
-              form.reset();
-              loadPage("carihesap");
-            } else {
-              alert(result.message);
-            }
-          })
-          .withFailureHandler(function (error) {
-            alert("Hata: " + error.message);
-          })
-          [handler](data);
-      }
+      }).getCariHesaplar();
+    }
 
-      // Cari Hesap Düzenleme ve Silme Fonksiyonları
-      function deleteCariHesap(id) {
-        if (!confirm("Bu cari hesabı silmek istediğinize emin misiniz?")) return;
-        google.script.run
-          .withSuccessHandler(function (response) {
-            if (response) {
-              alert("Cari hesap başarıyla silindi.");
-              loadPage("carihesap");
-            } else {
-              alert("Silme işlemi başarısız!");
-            }
-          })
-          .deleteCariHesap(id);
-      }
-
-      function editCariHesap(id) {
-        const row = document.querySelector(`tr[data-id='${id}']`);
-        if (!row) {
-          alert("Kayıt bulunamadı!");
-          return;
-        }
-        const updatedData = {
-          id: id,
-          firmaAdi: row.querySelector(".firmaAdi") ? row.querySelector(".firmaAdi").innerText : "",
-          subeBolge: row.querySelector(".subeBolge") ? row.querySelector(".subeBolge").innerText : "",
-          firmaTuru: row.querySelector(".firmaTuru") ? row.querySelector(".firmaTuru").innerText : "",
-          yetkiliKisi: row.querySelector(".yetkiliKisi") ? row.querySelector(".yetkiliKisi").innerText : "",
-          telefon: row.querySelector(".telefon") ? row.querySelector(".telefon").innerText : "",
-          email: row.querySelector(".email") ? row.querySelector(".email").innerText : ""
-        };
-        google.script.run
-          .withSuccessHandler(function (response) {
-            if (response) {
-              alert("Cari hesap başarıyla güncellendi.");
-              loadPage("carihesap");
-            } else {
-              alert("Güncelleme başarısız!");
-            }
-          })
-          .updateCariHesap(updatedData);
-      }
-    </script>
-  </body>
+    // Sayfa yüklendiğinde Cari Hesapları yükle
+    window.onload = function() {
+      loadCariHesaplar();
+    };
+  </script>
+</body>
 </html>
