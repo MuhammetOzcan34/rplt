@@ -19,8 +19,13 @@ function handlePageLoad(page, search = "", pageNumber = 1) {
       throw new Error("Sayfa parametresi geçersiz veya boş.");
     }
     Logger.log('handlePageLoad çağrıldı: ' + page + ', search: ' + search);
+
+    // HTML içeriğini yükle
     const html = HtmlService.createTemplateFromFile('templates/' + page)
-                .evaluate().getContent();
+                  .evaluate()
+                  .getContent();
+
+    // Sayfa verilerini al
     let pageData;
     switch (page) {
       case 'dashboard':
@@ -44,6 +49,8 @@ function handlePageLoad(page, search = "", pageNumber = 1) {
       default:
         throw new Error("Geçersiz sayfa: " + page);
     }
+
+    // HTML içeriği ve verileri döndür
     return {
       html: html,
       data: pageData
@@ -91,4 +98,17 @@ function testSheetsConnection() {
     Logger.log('Sheets bağlantı testi hatası: ' + e.toString());
     return false;
   }
+}
+
+// Teklif işlemlerini dışarıya açan global fonksiyonlar
+function addTeklif(data) {
+  return Teklif.add(data);
+}
+
+function updateTeklif(data) {
+  return Teklif.update(data.id, data);
+}
+
+function deleteTeklif(id) {
+  return Teklif.delete(id);
 }
