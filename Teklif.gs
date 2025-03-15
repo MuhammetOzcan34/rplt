@@ -3,10 +3,11 @@ class Teklif {
     try {
       const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Teklifler');
       const data = sheet.getDataRange().getValues();
+      if (data.length < 1) return { data: [], totalItems: 0 };
       data.shift(); // Başlık satırını çıkar
 
       // Filtreleme
-      const filteredData = data.filter(row =>
+      const filteredData = data.filter(row => 
         row[1].toString().toLowerCase().includes(search.toLowerCase())
       );
 
@@ -34,7 +35,7 @@ class Teklif {
         pageSize: pageSize
       };
     } catch (e) {
-      Logger.log('Hata:', e.toString());
+      Logger.log('Hata (Teklif.getList): ' + e.toString());
       throw e;
     }
   }
@@ -58,7 +59,7 @@ class Teklif {
         data.firmaAdi,
         data.teklifKonusu,
         data.yetkiliKisi,
-        'Beklemede', // Varsayılan durum
+        'Beklemede',
         data.odemeKosulu,
         data.gecerlilikSuresi,
         data.toplamTutar
@@ -67,7 +68,7 @@ class Teklif {
       Database.insert('Teklifler', row);
       return { success: true, message: 'Teklif başarıyla eklendi', id: id };
     } catch (e) {
-      Logger.log('Hata:', e.toString());
+      Logger.log('Hata (Teklif.add): ' + e.toString());
       return { success: false, message: e.message };
     }
   }
@@ -94,7 +95,7 @@ class Teklif {
       Database.update('Teklifler', row.rowIndex, updatedRow);
       return { success: true, message: 'Teklif başarıyla güncellendi' };
     } catch (e) {
-      Logger.log('Hata:', e.toString());
+      Logger.log('Hata (Teklif.update): ' + e.toString());
       return { success: false, message: e.message };
     }
   }
@@ -107,7 +108,7 @@ class Teklif {
       Database.delete('Teklifler', row.rowIndex);
       return { success: true, message: 'Teklif başarıyla silindi' };
     } catch (e) {
-      Logger.log('Hata:', e.toString());
+      Logger.log('Hata (Teklif.delete): ' + e.toString());
       return { success: false, message: e.message };
     }
   }
@@ -155,17 +156,17 @@ class Teklif {
 
       return { success: true, message: 'Teklif başarıyla kaydedildi!' };
     } catch (e) {
-      Logger.log('Hata:', e.toString());
+      Logger.log('Hata (Teklif.saveTeklif): ' + e.toString());
       return { success: false, message: e.message };
     }
   }
 }
 
-// Cari Hesaplar fonksiyonu
 function getCariHesaplar() {
   try {
     const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('CariHesaplar');
     const data = sheet.getDataRange().getValues();
+    if (data.length < 1) return [];
     data.shift(); // Başlık satırını çıkar
 
     return data.map(row => ({
@@ -173,7 +174,7 @@ function getCariHesaplar() {
       yetkiliKisi: row[4]
     }));
   } catch (e) {
-    Logger.log('Hata:', e.toString());
+    Logger.log('Hata (getCariHesaplar): ' + e.toString());
     throw e;
   }
 }
