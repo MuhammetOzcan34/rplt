@@ -54,7 +54,7 @@ class Teklif {
         id,
         teklifNo,
         data.teklifTuru,
-        Utilities.formatDate(new Date()),
+        Utilities.formatDate(new Date(), "GMT+3", "yyyy-MM-dd"),
         data.firmaAdi,
         data.teklifKonusu,
         data.yetkiliKisi,
@@ -111,22 +111,51 @@ class Teklif {
       return { success: false, message: e.message };
     }
   }
-}
 
-function loadTeklifVerileri() {
-  try {
-    const firmalarSheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('CariHesaplar');
-    const firmalar = firmalarSheet.getDataRange().getValues().map(row => ({ id: row[0], ad: row[1] }));
+  static saveTeklif(genelBilgiler, urunHizmetBilgileri) {
+    try {
+      // Genel bilgileri kaydet
+      const id = Utilities.generateId();
+      const teklifNo = (genelBilgiler.teklifTuru === 'Verilen' ? 'FT' : 'ST') +
+        (Database.getAll('Teklifler').length + 1).toString().padStart(4, '0');
 
-    const yetkililerSheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('CariHesaplar');
-    const yetkililer = yetkililerSheet.getDataRange().getValues().map(row => ({ id: row[0], ad: row[4] }));
+      const row = [
+        id,
+        teklifNo,
+        genelBilgiler.teklifTuru,
+        genelBilgiler.tarih,
+        genelBilgiler.firmaAdi,
+        genelBilgiler.teklifKonusu,
+        genelBilgiler.yetkiliKisi,
+        genelBilgiler.teklifDurumu,
+        genelBilgiler.odemeSekli,
+        genelBilgiler.gecerlilikSuresi,
+        genelBilgiler.toplamTutar
+      ];
 
-    const alinanTekliflerSheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Teklifler');
-    const alinanTeklifler = alinanTekliflerSheet.getDataRange().getValues().map(row => ({ id: row[0], ad: row[5] }));
+      Database.insert('Teklifler', row);
 
-    return { firmalar, yetkililer, alinanTeklifler };
-  } catch (e) {
-    Logger.log('Hata:', e.toString());
-    throw e;
+      // Ürün/Hizmet bilgilerini kaydet
+      urunHizmetBilgileri.forEach(item => {
+        const kalemRow = [
+          id,
+          item.urunAdi,
+          item.miktar,
+          item.birim,
+          item.birimFiyat,
+          item.paraBirimi,
+          item.tutar,
+          item.iskontoTutar,
+          item.kdvOrani,
+          item.netTutar
+        ];
+        Database.insert('TeklifKalemleri', kalemRow);
+      });
+
+      return { success: true, message: 'Teklif başarıyla kaydedildi!' };
+    } catch (e) {
+      Logger.log('Hata:', e.toString());
+      return { success: false, message: e.message };
+    }
   }
 }
