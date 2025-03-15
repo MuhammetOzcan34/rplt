@@ -115,7 +115,7 @@ class Teklif {
   static saveTeklif(genelBilgiler, urunHizmetBilgileri) {
     try {
       // Genel bilgileri kaydet
-      const id = Utilities.generateId();
+      const id = Utilities.getUuid();
       const teklifNo = (genelBilgiler.teklifTuru === 'Verilen' ? 'FT' : 'ST') +
         (Database.getAll('Teklifler').length + 1).toString().padStart(4, '0');
 
@@ -140,6 +140,7 @@ class Teklif {
         const kalemRow = [
           id,
           item.urunAdi,
+          item.ozellikler,
           item.miktar,
           item.birim,
           item.birimFiyat,
@@ -157,5 +158,21 @@ class Teklif {
       Logger.log('Hata:', e.toString());
       return { success: false, message: e.message };
     }
+  }
+}
+
+function getCariHesaplar() {
+  try {
+    const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('CariHesaplar');
+    const data = sheet.getDataRange().getValues();
+    data.shift(); // Başlık satırını çıkar
+
+    return data.map(row => ({
+      firmaAdi: row[1],
+      yetkiliKisi: row[4]
+    }));
+  } catch (e) {
+    Logger.log('Hata:', e.toString());
+    throw e;
   }
 }
