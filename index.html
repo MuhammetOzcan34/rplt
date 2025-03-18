@@ -5,18 +5,12 @@
   <meta charset="UTF-8">
   <title>İş Yönetim Sistemi</title>
 
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-
-  <!-- Özel Stil Dosyası -->
   <?!= include('styles'); ?>
 </head>
 <body>
 
-<!-- Header Bölümü -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
     <a class="navbar-brand" href="#" onclick="loadPage('dashboard')">İş Yönetim Sistemi</a>
@@ -45,16 +39,13 @@
   </div>
 </nav>
 
-<!-- İçerik Bölümü -->
 <div id="content" class="container-fluid mt-4">
-  <!-- Dashboard (Ana Sayfa) -->
   <div id="dashboard">
     <div class="text-center mt-5">
       <h1 class="display-4">İş Yönetim Sistemi</h1>
       <p class="lead">İş süreçlerinizi kolayca yönetin.</p>
     </div>
 
-    <!-- Sayfa Butonları -->
     <div class="row justify-content-center mt-5">
       <div class="col-md-3 mb-4">
         <div class="card text-center h-100 shadow">
@@ -110,15 +101,10 @@
   </div>
 </div>
 
-<!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- JavaScript Fonksiyonları -->
 <script>
-// Sayfa yükleme fonksiyonu
 function loadPage(page, search = "", pageNumber = 1) {
   if (!page) {
     console.error("Sayfa parametresi geçersiz veya boş.");
@@ -132,12 +118,10 @@ function loadPage(page, search = "", pageNumber = 1) {
     .withSuccessHandler(function (result) {
       console.log("Sayfa içeriği ve veriler alındı");
       if (result && result.html) {
-        // Önce HTML içeriğini yükle
         $("#content").html(result.html);
         $(".nav-link").removeClass("active");
         $(`[onclick="loadPage('${page}')"]`).addClass("active");
 
-        // Sonra verileri tabloya yükle
         if (result.data) {
           switch (page) {
             case "carihesap":
@@ -171,18 +155,16 @@ function loadPage(page, search = "", pageNumber = 1) {
     .handlePageLoad(page, search, pageNumber);
 }
 
-// Header'daki bağlantılar için event.preventDefault() ekleme
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".nav-link").forEach(link => {
     link.addEventListener("click", function (event) {
-      event.preventDefault(); // Sayfanın yenilenmesini önler
-      let targetPage = this.getAttribute("href").replace("#", ""); // Hedef sayfayı al
-      loadPage(targetPage); // Sayfayı yükleme fonksiyonunu çağır
+      event.preventDefault();
+      let targetPage = this.getAttribute("href").replace("#", "");
+      loadPage(targetPage);
     });
   });
 });
 
-// Sayfa yüklendiğinde Dashboard'u göster
 $(document).ready(function() {
   loadPage('dashboard');
 });
