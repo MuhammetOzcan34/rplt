@@ -1,4 +1,3 @@
-// Ana uygulama yönetimi
 function doGet(e) {
   return HtmlService.createTemplateFromFile('index')
       .evaluate()
@@ -7,23 +6,16 @@ function doGet(e) {
       .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
-// HTML dosyalarını dahil etmek için kullanılır
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
 
-// Sayfa yönlendirmesi
 function handlePageLoad(page, search = "", pageNumber = 1) {
   try {
-    if (!page) throw new Error("Sayfa parametresi geçersiz veya boş.");
-    Logger.log('handlePageLoad çağrıldı: ' + page + ', search: ' + search);
-
-    // HTML içeriğini yükle
     const html = HtmlService.createTemplateFromFile('templates/' + page)
                   .evaluate()
                   .getContent();
 
-    // Sayfa verilerini al
     let pageData;
     switch (page) {
       case 'dashboard':
@@ -55,47 +47,41 @@ function handlePageLoad(page, search = "", pageNumber = 1) {
   }
 }
 
-// Global ayarlar
 const SHEET_ID = '10j6_p6gyTQfEW0OiQPJGljg7mg1XArwQvoOIviVCo34';
 const DRIVE_FOLDER = '1CWD2kEdiNCDIt8cyU_8HUkw78JUIzHgn';
 
-// Cari Hesap işlemleri
+// CARİ HESAP FONKSİYONLARI
 function addCariHesap(data) { return CariHesap.add(data); }
 function updateCariHesap(data) { return CariHesap.update(data.id, data); }
 function deleteCariHesap(id) { return CariHesap.delete(id); }
 
-// Teklif işlemleri
+// TEKLİF FONKSİYONLARI
 function addTeklif(data) { return Teklif.add(data); }
 function updateTeklif(data) { return Teklif.update(data.id, data); }
 function deleteTeklif(id) { return Teklif.delete(id); }
+function saveTeklif(genelBilgiler, urunHizmetBilgileri) { return Teklif.saveTeklif(genelBilgiler, urunHizmetBilgileri); }
+function getCariHesaplar() { return Teklif.getCariHesaplar(); }
+function getTeklifTurleri() { return Teklif.getTeklifTurleri(); }
+function getNextTeklifNo(teklifTuru) { return Teklif.getNextTeklifNo(teklifTuru); }
 
-// Proje işlemleri
+// PROJE FONKSİYONLARI
 function addProje(data) { return Proje.add(data); }
 function updateProje(data) { return Proje.update(data.id, data); }
 function deleteProje(id) { return Proje.delete(id); }
 
-// Görev işlemleri
+// GÖREV FONKSİYONLARI
 function addGorev(data) { return Gorev.add(data); }
 function updateGorev(data) { return Gorev.update(data.id, data); }
 function deleteGorev(id) { return Gorev.delete(id); }
 
-// Rapor işlemleri
+// RAPOR FONKSİYONLARI
 function getRaporData() { return Rapor.getDashboardData(); }
 
-// Google Sheets bağlantı testi
 function testSheetsConnection() {
   try {
-    Logger.log('Sheets bağlantı testi başladı');
     const ss = SpreadsheetApp.openById(SHEET_ID);
-    const sheet = ss.getSheetByName('CariHesaplar');
-    if (sheet) {
-      const data = sheet.getDataRange().getValues();
-      Logger.log('CariHesaplar veri sayısı: ' + data.length);
-      return true;
-    }
-    return false;
+    return ss ? true : false;
   } catch(e) {
-    Logger.log('Hata: ' + e.toString());
     return false;
   }
 }
