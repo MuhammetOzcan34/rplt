@@ -1,180 +1,199 @@
 class Teklif {
-  static getList(search = '', pageNumber = 1) {
-    try {
-      const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('Teklifler');
-      const data = sheet.getDataRange().getValues();
-      if (data.length < 1) return { data: [], totalItems: 0 };
-      data.shift(); // Başlık satırını çıkar
-
-      // Filtreleme
-      const filteredData = data.filter(row => 
-        row[1].toString().toLowerCase().includes(search.toLowerCase())
-      );
-
-      // Sayfalama
-      const pageSize = 25;
-      const startIndex = (pageNumber - 1) * pageSize;
-      const pageData = filteredData.slice(startIndex, startIndex + pageSize);
-
-      return {
-        data: pageData.map(row => ({
-          id: row[0],
-          teklifNo: row[1],
-          teklifTuru: row[2],
-          tarih: row[3],
-          firmaAdi: row[4],
-          teklifKonusu: row[5],
-          yetkiliKisi: row[6],
-          teklifDurumu: row[7],
-          odemeKosulu: row[8],
-          gecerlilikSuresi: row[9],
-          toplamTutar: row[10]
-        })),
-        totalItems: filteredData.length,
-        pageNumber: pageNumber,
-        pageSize: pageSize
-      };
-    } catch (e) {
-      Logger.log('Hata (Teklif.getList): ' + e.toString());
-      throw e;
-    }
-  }
-
   static add(data) {
     try {
-      // Gerekli alanların kontrolü
-      if (!data.teklifTuru || !data.firmaAdi || !data.teklifKonusu) {
-        throw new Error('Zorunlu alanlar eksik: teklifTuru, firmaAdi, teklifKonusu');
+      if (!data.teklifTuru || !data.firmaAdi) {
+        throw new Error('Teklif türü ve firma adı zorunludur');
       }
 
       const id = Utilities.getUuid();
-      const teklifNo = (data.teklifTuru === 'Verilen' ? 'FT' : 'ST') +
-        (Database.getAll('Teklifler').length + 1).toString().padStart(4, '0');
+      const teklifNo = Math.floor(100000 + Math.random() * 900000);
 
       const row = [
         id,
         teklifNo,
         data.teklifTuru,
-        Utilities.formatDate(new Date(), "GMT+3", "yyyy-MM-dd"),
         data.firmaAdi,
-        data.teklifKonusu,
-        data.yetkiliKisi,
-        'Beklemede',
-        data.odemeKosulu,
-        data.gecerlilikSuresi,
-        data.toplamTutar
+        data.teklifKonusu || '',
+        data.yetkiliKisi || '',
+        data.teklifDurumu || '',
+        data.tarih || '',
+        data.odemeSekli || '',
+        data.gecerlilikSuresi || '',
+        data.toplamTutar || 0
       ];
 
-      Database.insert('Teklifler', row);
-      return { success: true, message: 'Teklif başarıyla eklendi', id: id };
+      if (Database.insert('Teklifler', row)) {
+        return {
+          success: true,
+          message: 'Teklif başarıyla eklendi',
+          id: id
+        };
+      } else {
+        throw new Error('Veri eklenemedi');
+      }
     } catch (e) {
-      Logger.log('Hata (Teklif.add): ' + e.toString());
-      return { success: false, message: e.message };
+      Logger.log('Hata:', e.toString());
+      throw e;
     }
   }
 
   static update(id, data) {
     try {
       const row = Database.findById('Teklifler', id);
-      if (!row) throw new Error('Teklif bulunamadı');
+      if (!row) {
+        throw new Error('Teklif bulunamadı');
+      }
 
       const updatedRow = [
         id,
-        row[1], // Teklif no değişmez
+        row[1],
         data.teklifTuru,
-        row[3], // Tarih değişmez
         data.firmaAdi,
-        data.teklifKonusu,
-        data.yetkiliKisi,
-        data.teklifDurumu,
-        data.odemeKosulu,
-        data.gecerlilikSuresi,
-        data.toplamTutar
+        data.teklifKonusu || '',
+        data.yetkiliKisi || '',
+        data.teklifDurumu || '',
+        data.tarih || '',
+        data.odemeSekli || '',
+        data.gecerlilikSuresi || '',
+        data.toplamTutar || 0
       ];
 
       Database.update('Teklifler', row.rowIndex, updatedRow);
       return { success: true, message: 'Teklif başarıyla güncellendi' };
     } catch (e) {
-      Logger.log('Hata (Teklif.update): ' + e.toString());
-      return { success: false, message: e.message };
+      Logger.log('Hata:', e.toString());
+      throw e;
     }
   }
 
   static delete(id) {
     try {
       const row = Database.findById('Teklifler', id);
-      if (!row) throw new Error('Teklif bulunamadı');
+      if (!row) {
+        throw new Error('Teklif bulunamadı');
+      }
 
       Database.delete('Teklifler', row.rowIndex);
       return { success: true, message: 'Teklif başarıyla silindi' };
     } catch (e) {
-      Logger.log('Hata (Teklif.delete): ' + e.toString());
-      return { success: false, message: e.message };
+      Logger.log('Hata:', e.toString());
+      throw e;
+    }
+  }
+
+  static getList(search = '', pageNumber = 1) {
+    try {
+      const sheet = Database.getSheet('Teklifler');
+      const data = sheet.getDataRange().getValues();
+      if(data.length <= 1) return [];
+
+      const headers = data.shift();
+      
+      // Dinamik sütun indeksleri
+      const columnIndex = {
+        id: headers.indexOf('ID'),
+        teklifNo: headers.indexOf('Teklif No'),
+        teklifTuru: headers.indexOf('Teklif Türü'),
+        firmaAdi: headers.indexOf('Firma Adı'),
+        teklifKonusu: headers.indexOf('Teklif Konusu'),
+        teklifDurumu: headers.indexOf('Teklif Durumu'),
+        tarih: headers.indexOf('Tarih'),
+        toplamTutar: headers.indexOf('Toplam Tutar')
+      };
+
+      const filteredData = data.filter(row => 
+        row[columnIndex.firmaAdi]?.toLowerCase().includes(search.toLowerCase()) ||
+        row[columnIndex.teklifNo]?.toString().includes(search) ||
+        row[columnIndex.teklifKonusu]?.toLowerCase().includes(search.toLowerCase())
+      );
+
+      const pageSize = 25;
+      const startIndex = (pageNumber - 1) * pageSize;
+      const pageData = filteredData.slice(startIndex, startIndex + pageSize);
+
+      return pageData.map(row => ({
+        id: row[columnIndex.id],
+        teklifNo: row[columnIndex.teklifNo],
+        teklifTuru: row[columnIndex.teklifTuru],
+        firmaAdi: row[columnIndex.firmaAdi],
+        teklifKonusu: row[columnIndex.teklifKonusu],
+        teklifDurumu: row[columnIndex.teklifDurumu],
+        tarih: Utilities.formatDate(new Date(row[columnIndex.tarih]), 'GMT+3', 'dd.MM.yyyy'),
+        toplamTutar: new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(row[columnIndex.toplamTutar])
+      }));
+    } catch (e) {
+      Logger.log('Hata:', e.toString());
+      throw e;
     }
   }
 
   static saveTeklif(genelBilgiler, urunHizmetBilgileri) {
     try {
-      // Genel bilgileri kaydet
       const id = Utilities.getUuid();
-      const teklifNo = (genelBilgiler.teklifTuru === 'Verilen' ? 'FT' : 'ST') +
-        (Database.getAll('Teklifler').length + 1).toString().padStart(4, '0');
+      const teklifNo = Math.floor(100000 + Math.random() * 900000);
 
-      const row = [
+      const teklifRow = [
         id,
         teklifNo,
         genelBilgiler.teklifTuru,
-        genelBilgiler.tarih,
         genelBilgiler.firmaAdi,
         genelBilgiler.teklifKonusu,
         genelBilgiler.yetkiliKisi,
         genelBilgiler.teklifDurumu,
+        genelBilgiler.tarih,
         genelBilgiler.odemeSekli,
         genelBilgiler.gecerlilikSuresi,
         genelBilgiler.toplamTutar
       ];
 
-      Database.insert('Teklifler', row);
-
-      // Ürün/Hizmet bilgilerini kaydet
-      urunHizmetBilgileri.forEach(item => {
-        const kalemRow = [
-          id,
-          item.urunAdi,
-          item.ozellikler,
-          item.miktar,
-          item.birim,
-          item.birimFiyat,
-          item.paraBirimi,
-          item.tutar,
-          item.iskontoTutar,
-          item.kdvOrani,
-          item.netTutar
-        ];
-        Database.insert('TeklifKalemleri', kalemRow);
-      });
-
-      return { success: true, message: 'Teklif başarıyla kaydedildi!' };
+      if (Database.insert('Teklifler', teklifRow)) {
+        urunHizmetBilgileri.forEach(urun => {
+          const urunRow = [
+            Utilities.getUuid(),
+            id,
+            urun.urunAdi,
+            urun.ozellikler,
+            urun.miktar,
+            urun.birim,
+            urun.birimFiyat,
+            urun.paraBirimi,
+            urun.tutar,
+            urun.iskontoTutar,
+            urun.kdvOrani,
+            urun.netTutar
+          ];
+          Database.insert('TeklifUrunleri', urunRow);
+        });
+        return { success: true, message: 'Teklif başarıyla kaydedildi' };
+      } else {
+        throw new Error('Teklif kaydedilemedi');
+      }
     } catch (e) {
-      Logger.log('Hata (Teklif.saveTeklif): ' + e.toString());
-      return { success: false, message: e.message };
+      Logger.log('Hata:', e.toString());
+      throw e;
     }
   }
-}
 
-function getCariHesaplar() {
-  try {
-    const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('CariHesaplar');
-    const data = sheet.getDataRange().getValues();
-    if (data.length < 1) return [];
-    data.shift(); // Başlık satırını çıkar
+  static getCariHesaplar() {
+    try {
+      const sheet = Database.getSheet('CariHesaplar');
+      const data = sheet.getDataRange().getValues();
+      data.shift();
 
-    return data.map(row => ({
-      firmaAdi: row[1],
-      yetkiliKisi: row[4]
-    }));
-  } catch (e) {
-    Logger.log('Hata (getCariHesaplar): ' + e.toString());
-    throw e;
+      return data.map(row => ({
+        id: row[0],
+        firmaAdi: row[1],
+        subeBolge: row[2],
+        firmaTuru: row[3],
+        yetkiliKisi: row[4],
+        telefon: row[5],
+        email: row[6],
+        gorevSayisi: row[7],
+        projeSayisi: row[8]
+      }));
+    } catch (e) {
+      Logger.log('Hata:', e.toString());
+      throw e;
+    }
   }
 }
