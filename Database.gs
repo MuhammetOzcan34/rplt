@@ -4,32 +4,27 @@ class Database {
       Logger.log('getSheet çağrıldı: ' + sheetName);
       Logger.log('SHEET_ID: ' + SHEET_ID);
 
-      // Google Sheets'e erişimi kontrol et
       if (!SHEET_ID) {
         throw new Error('SHEET_ID tanımlanmamış');
       }
 
-      // Spreadsheet'i aç
       const ss = SpreadsheetApp.openById(SHEET_ID);
       if (!ss) {
         throw new Error('Spreadsheet açılmadı');
       }
       Logger.log('Spreadsheet başarıyla açıldı');
 
-      // Sayfayı kontrol et
       const sheet = ss.getSheetByName(sheetName);
       if (!sheet) {
-        Logger.log(`Hata: \"${sheetName}\" sayfası bulunamadı`);
-        // Sayfayı otomatik oluştur
+        Logger.log(`Hata: "${sheetName}" sayfası bulunamadı`);
         const newSheet = ss.insertSheet(sheetName);
-        // Başlık satırını ekle
         const headers = ['ID', 'Firma Adı', 'Şube/Bölge', 'Firma Türü', 'Yetkili Kişi', 'Telefon', 'Email', 'Görev Sayısı', 'Proje Sayısı'];
         newSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-        Logger.log(`\"${sheetName}\" sayfası oluşturuldu`);
+        Logger.log(`"${sheetName}" sayfası oluşturuldu`);
         return newSheet;
       }
 
-      Logger.log(`\"${sheetName}\" sayfası başarıyla açıldı`);
+      Logger.log(`"${sheetName}" sayfası başarıyla açıldı`);
       return sheet;
     } catch (e) {
       Logger.log('getSheet Hatası: ' + e.toString());
@@ -42,7 +37,6 @@ class Database {
       Logger.log(`getAll çağrıldı: ${sheetName}`);
       const sheet = this.getSheet(sheetName);
 
-      // Veri aralığını kontrol et
       const lastRow = sheet.getLastRow();
       const lastCol = sheet.getLastColumn();
       Logger.log(`Son satır: ${lastRow}, Son sütun: ${lastCol}`);
@@ -56,7 +50,6 @@ class Database {
       Logger.log(`${sheetName} verisi yüklendi: ${data.length} satır`);
       Logger.log('İlk satır örneği: ' + JSON.stringify(data[0]));
 
-      // Header hariç tüm verileri döndür
       if (data.length > 1) {
         const rows = data.slice(1);
         Logger.log(`Döndürülen veri sayısı: ${rows.length}`);
@@ -79,17 +72,16 @@ class Database {
         throw new Error(`${sheetName} sayfası bulunamadı`);
       }
 
-      // Veriyi doğrudan ekle
       const row = [
-        data[0], // id
-        data[1], // firmaAdi
-        data[2], // subeBolge
-        data[3], // firmaTuru
-        data[4], // yetkiliKisi
-        data[5], // telefon
-        data[6], // email
-        data[7], // gorevSayisi
-        data[8]  // projeSayisi
+        data[0],
+        data[1],
+        data[2],
+        data[3],
+        data[4],
+        data[5],
+        data[6],
+        data[7],
+        data[8]
       ];
 
       Logger.log('Eklenecek satır:', row);
@@ -137,7 +129,7 @@ class Database {
       const data = this.getAll(sheetName);
       const row = data.find(row => row[0] === id);
       if (row) {
-        row.rowIndex = data.indexOf(row) + 2; // Header + 0-based index düzeltmesi
+        row.rowIndex = data.indexOf(row) + 2;
       }
       return row;
     } catch (e) {
