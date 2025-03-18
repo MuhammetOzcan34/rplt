@@ -11,6 +11,10 @@ function include(filename) {
 }
 
 function handlePageLoad(page, search = "", pageNumber = 1) {
+  if (!page) {
+    throw new Error("Sayfa parametresi geçersiz veya boş.");
+  }
+
   try {
     const html = HtmlService.createTemplateFromFile('templates/' + page)
                   .evaluate()
